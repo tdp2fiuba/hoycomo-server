@@ -1,0 +1,29 @@
+{
+  "name": "hoycomo-server",
+  "version": "1.0.0",
+  "description": "Server - HoyComo - FIUBA | TDP II",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo 'soon..OK'",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tdp2fiuba/hoycomo-server.git"
+  },
+  "keywords": [
+    "server",
+    "HoyComo",
+    "tdp2",
+    "fiuba"
+  ],
+  "author": "FME-JMB-BL",
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "^1.15.2",
+    "express": "^4.14.0",
+    "log4js": "^0.6.38",
+    "massive": "^2.5.0",
+    "mongoose": "~3.6.11"
+  }
+}
