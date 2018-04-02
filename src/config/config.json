@@ -1,5 +1,6 @@
 {
     "express"  : {
         "port"     : 8080
-    }
+    },
+    "api_host_base" : "/api"
 }
