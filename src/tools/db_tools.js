@@ -18,7 +18,7 @@ exports.DBConnectMongoose = function() {
         // database connect
         mongoose.connect('mongodb://' + config.db_config.host + ":" + config.db_config.port + "/" + config.db_config.name, { useMongoClient: true })
             .then(() => {
-                logger.debug('mongo connection created');
+                logger.log('mongo connection created');
                 resolve(db);
             })
             .catch(err => {

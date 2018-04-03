@@ -10,14 +10,13 @@ var storeSchema = new Schema({
   register_timestamp : { type: Date, default: Date.now },
   last_edit_timestamp : { type: Date, default: Date.now },
   email : { type: String },
-  address : 
-      {
+  address : {
         name : {type : String},
         lat : {type : Number},
         lon : {type : Number}
-      },
-  menu : [
-    dish_id : {type : ObjectId}
+  },
+  menu: [ 
+    {dish_id: {type: mongoose.Schema.Types.ObjectId}}
   ],
   delay_time: {
     max : {type : Number},

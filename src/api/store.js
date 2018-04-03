@@ -1,5 +1,4 @@
 //Store API methods
-
 var HttpStatus = require('http-status-codes');
 var Store = require('../models/store.js');
 var common = require('../utils/common.js');
@@ -31,6 +30,8 @@ exports.create = function (req, res) {
 	});
 
 	// TODO: 1. create login and pass
+	var login = "";
+	var pass = "";
 
 	var store = new Store({
 		name : name,
@@ -40,8 +41,8 @@ exports.create = function (req, res) {
 			lat : address.lat,
 			lon : adresss.lon
 		},
-		login : ,
-		password :
+		login : login,
+		password : pass
 	});
 
 	store.save(function(err, store) {

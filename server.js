@@ -11,26 +11,24 @@ var db_tools = require('./src/tools/db_tools');
 var config = require('./src/config/config.json');
 
 var app = express();
-
 db_tools.DBConnectMongoose()
     .then(() => {
-        var routes = require('./routes/routes.js');
-
+        var routes = require('./src/routes/routes.js');
+        
         // configure app to use bodyParser()
         // this will let us get the data from a POST
         app.use(bodyparser.urlencoded({extended: true}));
         app.use(bodyparser.json({limit: '10mb'}));
 
         app.set('logger',logger);
-        app.set('db',db);
+        app.set('db',db_tools.DBConnectMongoose());
         
         routes.assignRoutes(app);
-
+        
         var port = config.express.port;
-
+        
         app.listen(port);
-
-        logger.debug('Server listening on port ' + port);
+        logger.info('Server listening on port ' + port);
     })
     .catch(err => {
         logger.error('Error: ' + err);
