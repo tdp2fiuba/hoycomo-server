@@ -1,5 +1,5 @@
-var store = require('../api/store.js');
-var config = require('../config/config.js');
+var store = require('../api/store');
+var config = require('../config/config');
 var apiHostBase = config.api_host_base;
 
 exports.assignRoutes = function (app) {

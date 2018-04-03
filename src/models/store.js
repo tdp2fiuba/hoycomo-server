@@ -17,7 +17,9 @@ var storeSchema = new Schema({
         lon : {type : Number}
       },
   menu : [
-    dish_id : {type : ObjectId}
+    {
+      dish_id: {type : Schema.Types.ObjectId}
+    }
   ],
   delay_time: {
     max : {type : Number},

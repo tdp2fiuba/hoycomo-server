@@ -39,9 +39,7 @@ exports.create = function (req, res) {
 			name: address.name,
 			lat : address.lat,
 			lon : adresss.lon
-		},
-		login : ,
-		password :
+		}
 	});
 
 	store.save(function(err, store) {

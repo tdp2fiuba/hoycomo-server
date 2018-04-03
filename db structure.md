@@ -16,7 +16,7 @@
 		“last_edit_timestamp” : integer,
 		“email” : string,
 		“date_of_birth”: string,
-		"adress" : [
+		"address" : [
 			{
 				"name" : string,
 				"latitude" : float,
@@ -44,7 +44,7 @@
 		“last_edit_timestamp” : integer,
 		“email” : string,
 		“date_of_birth”: string,
-		"adress" : [
+		"address" : [
 			{
 				"name" : string,
 				"latitude" : float,
