@@ -1,3 +1,6 @@
+#Jetbrains folders
+.idea/
+
 # NodeJS depende
 node_modules/
 
