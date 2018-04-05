@@ -74,3 +74,15 @@ exports.getStores = function(data) {
             })
     })
 };
+
+exports.updateStore = function(store_id,data) {
+    return new Promise(function(resolve, reject) {
+        Store.findOneAndUpdate({_id : store_id},data)
+            .then(store => {
+                resolve(store);
+            })
+            .catch(err => {
+                reject(err);
+            })
+    })
+};

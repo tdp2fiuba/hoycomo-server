@@ -10,6 +10,16 @@ exports.config = function(config){
 	common.config(config);
 };
 
+function storeToFront(store) {
+    return {
+        id: store._id,
+        name: store.name,
+        business_name: store.business_name,
+        address: store.address,
+        menu: store.menu
+    }
+}
+
 exports.create = function (req, res) {
 	var store = req.body.store;
 	var name = store.name;
@@ -68,7 +78,7 @@ exports.search = function (req, res) {
 	
  	Store.getStores({page: page,count: count})
         .then(stores => {
-            res.status(HttpStatus.OK).json(stores);
+            res.status(HttpStatus.OK).json(stores.map(storeToFront));
         })
         .catch(err => {
             res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(err);
@@ -84,7 +94,7 @@ exports.read = function (req, res) {
 
 	Store.getStoreByID(id)
         .then(store => {
-            res.status(HttpStatus.OK).json(store);
+            res.status(HttpStatus.OK).json(storeToFront(store));
         })
         .catch(err => {
             res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(err);
@@ -100,27 +110,14 @@ exports.update = function (req, res) {
 		return common.handleError(res,{code:common.ERROR_PARAMETER_MISSING,message:"Breach of preconditios (missing parameters)"},HttpStatus.NOT_ACCEPTABLE);
 	}
 
-	Store.getStoreByID(id)
-        .then(store => {
-            res.status(HttpStatus.OK).json(store);
-        })
-        .catch(err => {
-            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(err);
-	});
+    //TODO parse data to Update
 
-	Store.findById(id, function(err, store) {
-	    if (err)
-	      return common.handleError(res,{code:common.ERROR_INSERT_DB,message:"Store non exist."},HttpStatus.NOT_FOUND);
-
-	    //TODO Update
-	    
-    	//Save the store and check for errors
-	    store.save(function(err) {
-	      	if (err)
-	        	return common.handleError(res,{code:common.ERROR_INSERT_DB,message:"Store non exist."},HttpStatus.NOT_FOUND);
-	        
-	      	res.status(HttpStatus.OK).json(store);
-	    });
+	Store.updateStore(id,data)
+	.then(store => {
+		res.status(HttpStatus.OK).json(storeToFront(store));
+	})
+	.catch(err => {
+		res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(err);
 	});
 };
 
@@ -131,5 +128,5 @@ exports.delete = function (req, res) {
 		return common.handleError(res,{code:common.ERROR_PARAMETER_MISSING,message:"Breach of preconditios (missing parameters)"},HttpStatus.NOT_ACCEPTABLE);
 	}
 
-	// Use the Beer model to find a specific beer and remove it
+	// TODO delete or set suspend in store
 };

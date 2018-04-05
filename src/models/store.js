@@ -1,15 +1,5 @@
 var storeDB = require('../db/store.js');
 
-function storeToFront(store) {
-    return {
-        id: store._id,
-        name: store.name,
-        business_name: store.business_name,
-        address: store.address,
-        menu: store.menu
-    }
-}
-
 exports.createStore = function(store_data) {
     return new Promise(function(resolve, reject) {
         if (!store_data.name ||
@@ -36,20 +26,21 @@ exports.createStore = function(store_data) {
 exports.updateStore = function(store_id,store_data) {
     return new Promise(function(resolve, reject) {
         if (!store_id || !store_data) {
-            reject('Missing Store ID');
+            reject('Missing parameters');
             return;
         }
 
-        storeDB.getStoreById(store_id)
+        //TODO: VALIDATE DATA
+
+        storeDB.updateStore(store_id,data)
             .then(store => {
-                //TODO UPDATE status
-                resolve(storeDB.saveStore(store));
+                resolve(store);
             })
             .catch(err => {
                 reject(err);
             })
     });
-}
+};
 
 //get store by ID
 exports.getStoreByID = function(store_id) {
@@ -64,10 +55,10 @@ exports.getStoreByID = function(store_id) {
                 resolve(store);
             })
             .catch(err => {
-                reject(err);
+                reject("Error al buscar el comercio.");
             })
     });
-}
+};
 
 //get list of stores
 exports.getStores = function(data) {
@@ -79,13 +70,14 @@ exports.getStores = function(data) {
 
         storeDB.getStores(data)
             .then(stores => {
-                resolve(stores.map(storeToFront));
+                resolve(stores);
             })
             .catch(err => {
+
                 reject(err);
             })
     });
-}
+};
 
 exports.getStoreByLogin = function(login) {
   return new Promise(function(resolve, reject) {
@@ -102,7 +94,7 @@ exports.getStoreByLogin = function(login) {
                 reject(err);
             })
     });
-}
+};
 
 exports.findSimilarLogin = function(login) {
   return new Promise(function(resolve, reject) {
@@ -119,8 +111,8 @@ exports.findSimilarLogin = function(login) {
                 reject(err);
             })
     });
-}
+};
 
 exports.suspendStore = function(storeData) {
   
-}
+};
