@@ -2,8 +2,8 @@
 
 var mongoose = require('mongoose');
 var config = require('../config/configdb.json');
-// var log4js = require('log4js');
-// log4js.configure('./src/config/log.conf.json');
+var log4js = require('log4js');
+log4js.configure('./src/config/log.conf.json');
 // var logger = log4js.getLogger();
 
 var db;
@@ -18,8 +18,7 @@ exports.DBConnectMongoose = function() {
         // database connect
         mongoose.connect('mongodb://' + config.db_config.host + ":" + config.db_config.port + "/" + config.db_config.name, { useMongoClient: true })
             .then(() => {
-                console.log('mongo connection created');
-                db = mongoose.connection;
+                // logger.log('mongo connection created');
                 resolve(db);
             })
             .catch(err => {
