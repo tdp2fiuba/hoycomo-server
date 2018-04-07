@@ -86,3 +86,7 @@ exports.updateStore = function(store_id,data) {
             })
     })
 };
+
+exports.getStoreUser = function (credentials) {
+    return Store.findOne({ login: credentials.login, password: credentials.password });
+};

@@ -3,10 +3,10 @@
 var express = require('express');
 var bodyparser = require('body-parser');
 var log4js = require('log4js');
+var cors = require('cors');
 
 log4js.configure('./src/config/log.conf.json');
 var logger = log4js.getLogger();
-
 var db_tools = require('./src/tools/db_tools');
 var config = require('./src/config/config.json');
 
@@ -15,6 +15,7 @@ db_tools.DBConnectMongoose()
     .then(() => {
         var routes = require('./src/routes/routes.js');
         
+        app.use(cors())
         // configure app to use bodyParser()
         // this will let us get the data from a POST
         app.use(bodyparser.urlencoded({extended: true}));
@@ -31,5 +32,5 @@ db_tools.DBConnectMongoose()
         logger.info('Server listening on port ' + port);
     })
     .catch(err => {
-        logger.error('Error: ' + err);
+        console.log('Error: ' + err);
 })
