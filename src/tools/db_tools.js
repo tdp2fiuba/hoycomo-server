@@ -21,6 +21,7 @@ exports.DBConnectMongoose = function() {
 
         mongoose.connect(db_uri, { useMongoClient: true })
             .then(() => {
+                console.log('mongo connection created on URI:'+ db_uri);
                 // logger.log('mongo connection created');
                 resolve(db);
             })
