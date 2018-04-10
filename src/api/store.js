@@ -5,19 +5,62 @@ var common = require('../utils/common.js');
 var googleMaps = require('../models/googlemaps.js');
 var logger;
 
+var mocks = require('../utils/mocks.js');
+
 exports.config = function(config){
 	logger = config.logger;
 	common.config(config);
 };
 
 function storeToFront(store) {
+	//mock
+	const minMock = Math.floor((Math.random() * 20) + 30);
+	const maxMock = minMock + Math.floor((Math.random() * 40) + 1);
     return {
         id: store._id,
         name: store.name,
         business_name: store.business_name,
         address: store.address,
-        menu: store.menu
+        menu: store.menu,
+
+		//mock
+		delay_time: {
+        	min: minMock,
+			max: maxMock
+		},
+        availability: {
+            monday: {
+                start_time: "18:30:00",
+                end_time: "00:30:00"
+            },
+            tuesday: {
+                start_time: "18:30:00",
+                end_time: "00:30:00"
+            },
+            wednesday: {
+                start_time: "18:30:00",
+                end_time: "00:30:00"
+            },
+            thursday: {
+                start_time: "18:30:00",
+                end_time: "01:30:00"
+            },
+            friday: {
+                start_time: "18:30:00",
+                end_time: "02:00:00"
+            },
+            saturday: {
+                start_time: "18:30:00",
+                end_time: "03:00:00"
+            },
+            sunday: {
+                start_time: "18:30:00",
+                end_time: "01:30:00"
+            }
+        }
     }
+
+
 }
 
 exports.create = function (req, res) {
@@ -80,7 +123,8 @@ exports.search = function (req, res) {
 	
  	Store.getStores({page: page,count: count})
         .then(stores => {
-            res.status(HttpStatus.OK).json(stores.map(storeToFront));
+            //TODO: delete mocks
+        	res.status(HttpStatus.OK).json(stores.map(storeToFront).concat(mocks.storesMocks()));
         })
         .catch(err => {
             logger.error("Error on search stores " + err);
