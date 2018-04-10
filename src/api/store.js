@@ -27,7 +27,7 @@ exports.create = function (req, res) {
 	var address_name = store.address;
 
 	if (! common.checkDefinedParameters([name,business_name,address_name],"add store")){
-		return common.handleError(res,{code:common.ERROR_PARAMETER_MISSING,message:"Breach of preconditios (missing parameters)"},HttpStatus.BAD_REQUEST);
+		return common.handleError(res,{code:common.ERROR_PARAMETER_MISSING,message:"Parámetros inválidos o insuficientes"},HttpStatus.BAD_REQUEST);
 	}
 
 	//TODO find if exist store in db
@@ -62,13 +62,15 @@ exports.create = function (req, res) {
 				res.status(HttpStatus.CREATED).json({user:store.login, password: store.password});
 			})
 			.catch(err => {
-				return common.handleError(res,{code:common.ERROR_INSERT_DB,message:"Cannot create store: " + err},HttpStatus.NOT_ACCEPTABLE);
+                logger.error("Error on update store " + err);
+				return common.handleError(res,{code:common.ERROR_INSERT_DB,message:"Error interno al crear el comercio "},HttpStatus.NOT_ACCEPTABLE);
 			});
 		});
 	
 	})
 	.catch(err => {
-		return common.handleError(res,{code:common.ERROR_INSERT_DB,message:"Error on validate address."},HttpStatus.NOT_ACCEPTABLE);
+        logger.error("Error on create store " + err);
+		return common.handleError(res,{code:common.ERROR_INSERT_DB,message:"Error al validar la dirección."},HttpStatus.NOT_ACCEPTABLE);
 	})
 };
 
@@ -81,7 +83,8 @@ exports.search = function (req, res) {
             res.status(HttpStatus.OK).json(stores.map(storeToFront));
         })
         .catch(err => {
-            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(err);
+            logger.error("Error on search stores " + err);
+            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json("Error al buscar los comercios");
 	});	
 };
 
@@ -97,27 +100,45 @@ exports.read = function (req, res) {
             res.status(HttpStatus.OK).json(storeToFront(store));
         })
         .catch(err => {
-            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(err);
+            logger.error("Error on read store " + err);
+            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json("Error al obtener el comercio");
 	});	
 };
 
 
+//update basic information for a store
 exports.update = function (req, res) {
-	var id = req.params.store_id;
-	var data = req.body.store;
+	const id = req.params.store_id;
+	const data = req.body.store;
 	
 	if (! common.checkDefinedParameters([id,data],"update store")){
 		return common.handleError(res,{code:common.ERROR_PARAMETER_MISSING,message:"Breach of preconditios (missing parameters)"},HttpStatus.NOT_ACCEPTABLE);
 	}
 
-    //TODO parse data to Update
+  	var data_update = {
+		name : data.name,
+        business_name: data.business_name,
+	};
 
-	Store.updateStore(id,data)
-	.then(store => {
-		res.status(HttpStatus.OK).json(storeToFront(store));
-	})
-	.catch(err => {
-		res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(err);
+    new Promise(function(resolve, reject) {
+        if (data.address_name){
+			googleMaps.processAddress(data.address_name)
+			.then(address => {
+				data_update.address = address;
+				resolve(data_update);
+			})
+		}
+		resolve(data_update);
+    })
+	.then( data_update => {
+        Store.updateStore(id,data_update)
+		.then(store => {
+			res.status(HttpStatus.OK).json(storeToFront(store));
+		})
+		.catch(err => {
+			logger.error("Error on update store " + err);
+			res.status(HttpStatus.INTERNAL_SERVER_ERROR).json("Error al actualizar el comercio");
+		});
 	});
 };
 
