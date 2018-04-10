@@ -5,7 +5,7 @@ var loginRoutes = require('../routes/login')
 var utilsRoutes = require('./utils.js');
 
 exports.assignRoutes = function (app) {
-    //storeRoutes.assignRoutes(app);
+    storeRoutes.assignRoutes(app);
 
     app.post(apiHostBase + "/login", loginRoutes.login);
     utilsRoutes.assignRoutes(app);
