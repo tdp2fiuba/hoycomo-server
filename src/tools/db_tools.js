@@ -16,7 +16,10 @@ exports.DBConnectMongoose = function() {
         mongoose.Promise = global.Promise;
 
         // database connect
-        mongoose.connect('mongodb://' + config.db_config.host + ":" + config.db_config.port + "/" + config.db_config.name, { useMongoClient: true })
+        //MONGODB_URI for mongo db in heroku app
+        const db_uri = process.env.MONGODB_URI ? process.env.MONGODB_URI : 'mongodb://' + config.db_config.host + ":" + config.db_config.port + "/" + config.db_config.name;
+
+        mongoose.connect(db_uri, { useMongoClient: true })
             .then(() => {
                 // logger.log('mongo connection created');
                 resolve(db);
