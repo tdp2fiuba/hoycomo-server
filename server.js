@@ -26,10 +26,11 @@ db_tools.DBConnectMongoose()
         
         routes.assignRoutes(app);
         
-        var port = config.express.port;
+        var port = process.env.PORT || config.express.port;
         
         app.listen(port);
         logger.info('Server listening on port ' + port);
+        console.log('Server listening on port ' + port);
     })
     .catch(err => {
         console.log('Error: ' + err);
