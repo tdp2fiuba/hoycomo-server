@@ -29,6 +29,7 @@ exports.checkDefinedParameters = function(parameters,context){
 };
 
 exports.handleError = function(res,err,cod) {
+	console.log(err);
     return res.status(cod).send({code:err.code, error: err.message});
 };
 

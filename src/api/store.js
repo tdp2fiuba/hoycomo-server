@@ -65,6 +65,9 @@ function storeToFront(store) {
 
 exports.create = function (req, res) {
 	var store = req.body.store;
+	if (!store){
+        return common.handleError(res,{code:common.ERROR_PARAMETER_MISSING,message:"Parámetros inválidos o insuficientes"},HttpStatus.BAD_REQUEST);
+	}
 	var name = store.name;
 	var business_name = store.business_name;
 	var address_name = store.address;
@@ -102,6 +105,7 @@ exports.create = function (req, res) {
 		.then(store_data => {
 			Store.createStore(store_data)
 			.then(store => {
+				logger.info("Store created:" + store_data);
 				res.status(HttpStatus.CREATED).json({user:store.login, password: store.password});
 			})
 			.catch(err => {
@@ -123,8 +127,7 @@ exports.search = function (req, res) {
 	
  	Store.getStores({page: page,count: count})
         .then(stores => {
-            //TODO: delete mocks
-        	res.status(HttpStatus.OK).json(stores.map(storeToFront).concat(mocks.storesMocks()));
+        	res.status(HttpStatus.OK).json(stores.map(storeToFront));
         })
         .catch(err => {
             logger.error("Error on search stores " + err);
