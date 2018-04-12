@@ -19,4 +19,7 @@ exports.assignRoutes = function (app) {
 
 	//Search stores
 	app.get(apiHostBase + '/stores',store.search);
-}
+
+	//delete all store, CUIDADO
+    app.delete(apiHostBase + '/stores',store.deleteAll);
+};

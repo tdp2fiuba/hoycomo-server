@@ -16,14 +16,17 @@ function storeToFront(store) {
 	//mock
 	const minMock = Math.floor((Math.random() * 20) + 30);
 	const maxMock = minMock + Math.floor((Math.random() * 40) + 1);
-    return {
-        id: store._id,
+
+	return {
+        id: store.id,
         name: store.name,
         business_name: store.business_name,
         address: store.address,
         menu: store.menu,
 
 		//mock
+
+		avatar: common.apiBaseURL() + '/images' + '/avatar_default.jpg',
 		delay_time: {
         	min: minMock,
 			max: maxMock
@@ -197,4 +200,10 @@ exports.delete = function (req, res) {
 	}
 
 	// TODO delete or set suspend in store
+};
+
+exports.deleteAll = function (req, res) {
+	Store.deleteAll().then(
+        res.status(HttpStatus.OK).json("Comercios eliminados")
+	);
 };

@@ -1,8 +1,6 @@
-var db_tools = require('../tools/db_tools.js');
-var mongoose = require('mongoose');
+const mongoose = require('mongoose');
+const AutoIncrement = require('mongoose-sequence')(mongoose);
 
-// database connect
-var db = db_tools.DBConnectMongoose();
 
 Schema   = mongoose.Schema;	
 
@@ -29,6 +27,8 @@ var storeSchema = new Schema({
   },
   suspended: {type: Boolean, default: false}
 });
+
+storeSchema.plugin(AutoIncrement, {inc_field: 'id'});
 
 var Store = mongoose.model('Store',storeSchema);
 

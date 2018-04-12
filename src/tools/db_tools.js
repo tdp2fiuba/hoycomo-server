@@ -2,9 +2,6 @@
 
 var mongoose = require('mongoose');
 var config = require('../config/configdb.json');
-var log4js = require('log4js');
-log4js.configure('./src/config/log.conf.json');
-// var logger = log4js.getLogger();
 
 var db;
 

@@ -18,9 +18,7 @@ var userSchema = new Schema({
         longitude : {type : Number}
       }
   ],
-  orders : [
-    order_id : {type : ObjectId}
-  ]
+  orders : [ {order_id: {type : mongoose.Schema.Types.ObjectId} }]
 });
 
 module.exports = mongoose.model('User', userSchema);

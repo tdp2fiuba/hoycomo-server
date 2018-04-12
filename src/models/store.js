@@ -103,7 +103,7 @@ exports.findSimilarLogin = function(login) {
             return;
         }
 
-        storeDB.Store.find({login: new RegExp(login+'\d+', 'i')})
+        storeDB.Store.find({login: new RegExp(login+'\d*', 'i')})
             .then(store => {
                 resolve(store);
             })
@@ -115,4 +115,8 @@ exports.findSimilarLogin = function(login) {
 
 exports.suspendStore = function(storeData) {
   
+};
+
+exports.deleteAll = function () {
+  return storeDB.Store.remove({}).exec();
 };
