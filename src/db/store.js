@@ -18,9 +18,6 @@ var storeSchema = new Schema({
         lat : {type : Number},
         lon : {type : Number}
   },
-  menu: [ 
-    {dish_id: {type: mongoose.Schema.Types.ObjectId}}
-  ],
   delay_time: {
     max : {type : Number},
     min : {type : Number}
@@ -28,7 +25,7 @@ var storeSchema = new Schema({
   suspended: {type: Boolean, default: false}
 });
 
-storeSchema.plugin(AutoIncrement, {inc_field: 'id'});
+storeSchema.plugin(AutoIncrement, {inc_field: 'store_id'});
 
 var Store = mongoose.model('Store',storeSchema);
 
@@ -49,7 +46,7 @@ exports.saveStore = function(store_data) {
 
 exports.getStoreById = function(store_id) {
     return new Promise(function(resolve, reject) {
-        Store.findOne({_id : store_id})
+        Store.findOne({store_id : store_id})
             .then(store => {
                 resolve(store);
             })
@@ -61,7 +58,7 @@ exports.getStoreById = function(store_id) {
 
 exports.getStores = function(data) {
     return new Promise(function(resolve, reject) {
-        Store.find()//{sort: {register_timestamp: 'asc'}, skip: data.page*data.count, limit: data.count})
+        Store.find()
             .skip(data.page*data.count)
             .limit(parseInt(data.count))
             .sort({register_timestamp: 'asc'})
@@ -76,17 +73,13 @@ exports.getStores = function(data) {
 };
 
 exports.updateStore = function(store_id,data) {
-    return new Promise(function(resolve, reject) {
-        Store.findOneAndUpdate({_id : store_id},data)
-            .then(store => {
-                resolve(store);
-            })
-            .catch(err => {
-                reject(err);
-            })
-    })
+    return Store.findOneAndUpdate({store_id : store_id},data);
 };
 
 exports.getStoreUser = function (credentials) {
     return Store.findOne({ login: credentials.login, password: credentials.password });
+};
+
+exports.delete = function (store_id) {
+    return Store.findOneAndRemove({ store_id: store_id});
 };

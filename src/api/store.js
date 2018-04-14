@@ -18,11 +18,11 @@ function storeToFront(store) {
 	const maxMock = minMock + Math.floor((Math.random() * 40) + 1);
 
 	return {
-        id: store.id,
+        id: store.store_id,
         name: store.name,
         business_name: store.business_name,
         address: store.address,
-        menu: store.menu,
+        menu: store.menu, //TODO: find menu objects
 
 		//mock
 
@@ -199,11 +199,20 @@ exports.delete = function (req, res) {
 		return common.handleError(res,{code:common.ERROR_PARAMETER_MISSING,message:"Breach of preconditios (missing parameters)"},HttpStatus.NOT_ACCEPTABLE);
 	}
 
-	// TODO delete or set suspend in store
+	Store.deleteById(id)
+        .then(() => {
+            res.status(HttpStatus.OK);
+        })
+        .catch(err => {
+            logger.error("Error on delete store " + err);
+            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json("Error al eliminar el comercio");
+        });
 };
 
+/*
 exports.deleteAll = function (req, res) {
 	Store.deleteAll().then(
         res.status(HttpStatus.OK).json("Comercios eliminados")
 	);
 };
+*/

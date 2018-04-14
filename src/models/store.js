@@ -32,7 +32,7 @@ exports.updateStore = function(store_id,store_data) {
 
         //TODO: VALIDATE DATA
 
-        storeDB.updateStore(store_id,data)
+        storeDB.updateStore(store_id,store_data)
             .then(store => {
                 resolve(store);
             })
@@ -112,6 +112,10 @@ exports.findSimilarLogin = function(login) {
             })
     });
 };
+
+exports.deleteById = function (id) {
+    return storeDB.delete(id);
+}
 
 exports.suspendStore = function(storeData) {
   

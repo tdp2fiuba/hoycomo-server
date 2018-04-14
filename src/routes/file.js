@@ -5,10 +5,11 @@ var file = require('../api/file.js');
 
 exports.assignRoutes = function (app) {
 
-    //store image
-    //app.post(apiImageBase + '/upload',upload.single('image'),function (req, res, next) {
-        // req.file is the `image` file
-    //});
+    //test store image
+    app.post('/api/upload',upload.single('image'),function (req, res, next) {
+         //req.file is the `image` file
+        console.log(req.file);
+    });
 
     //get image by object, id and name
     app.get(apiImageBase + '/:object/:object_id/:name',file.findImageByObjectAndId);
