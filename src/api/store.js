@@ -201,7 +201,7 @@ exports.delete = function (req, res) {
 
 	Store.deleteById(id)
         .then(() => {
-            res.status(HttpStatus.OK);
+            res.status(HttpStatus.OK).json("Comercio eliminado");
         })
         .catch(err => {
             logger.error("Error on delete store " + err);
@@ -209,10 +209,9 @@ exports.delete = function (req, res) {
         });
 };
 
-/*
+
 exports.deleteAll = function (req, res) {
 	Store.deleteAll().then(
         res.status(HttpStatus.OK).json("Comercios eliminados")
 	);
 };
-*/
