@@ -16,51 +16,51 @@ function storeToFront(store) {
 	//mock
 	const minMock = Math.floor((Math.random() * 20) + 30);
 	const maxMock = minMock + Math.floor((Math.random() * 40) + 1);
+	const mockAvailability = {
+        monday: {
+            start_time: "18:30:00",
+            end_time: "00:30:00"
+        },
+        tuesday: {
+            start_time: "18:30:00",
+            end_time: "00:30:00"
+        },
+        wednesday: {
+            start_time: "18:30:00",
+            end_time: "00:30:00"
+        },
+        thursday: {
+            start_time: "18:30:00",
+            end_time: "01:30:00"
+        },
+        friday: {
+            start_time: "18:30:00",
+            end_time: "02:00:00"
+        },
+        saturday: {
+            start_time: "18:30:00",
+            end_time: "03:00:00"
+        },
+        sunday: {
+            start_time: "18:30:00",
+            end_time: "01:30:00"
+        }
+    };
 
 	return {
         id: store.store_id,
         name: store.name,
         business_name: store.business_name,
         address: store.address,
-        menu: store.menu, //TODO: find menu objects
 
 		//mock
 
-		avatar: common.apiBaseURL() + '/images' + '/avatar_default.jpg',
+		avatar: store.avatar ? store.avatar : common.apiBaseURL() + '/images' + '/avatar_default.jpg',
 		delay_time: {
         	min: minMock,
 			max: maxMock
 		},
-        availability: {
-            monday: {
-                start_time: "18:30:00",
-                end_time: "00:30:00"
-            },
-            tuesday: {
-                start_time: "18:30:00",
-                end_time: "00:30:00"
-            },
-            wednesday: {
-                start_time: "18:30:00",
-                end_time: "00:30:00"
-            },
-            thursday: {
-                start_time: "18:30:00",
-                end_time: "01:30:00"
-            },
-            friday: {
-                start_time: "18:30:00",
-                end_time: "02:00:00"
-            },
-            saturday: {
-                start_time: "18:30:00",
-                end_time: "03:00:00"
-            },
-            sunday: {
-                start_time: "18:30:00",
-                end_time: "01:30:00"
-            }
-        }
+        availability: store.availability ? store.availability : mockAvailability
     }
 
 
@@ -159,20 +159,44 @@ exports.read = function (req, res) {
 //update basic information for a store
 exports.update = function (req, res) {
 	const id = req.params.store_id;
-	const data = req.body.store;
+	const data_update = {};
 	
-	if (! common.checkDefinedParameters([id,data],"update store")){
+	if (! common.checkDefinedParameters([id],"update store")){
 		return common.handleError(res,{code:common.ERROR_PARAMETER_MISSING,message:"Breach of preconditios (missing parameters)"},HttpStatus.NOT_ACCEPTABLE);
 	}
 
-  	var data_update = {
-		name : data.name,
-        business_name: data.business_name,
-	};
+	const fields = ['name','business_name','availability','address'];
+
+	fields.each(function (field) {
+		if (req.body[field]){
+			data_update[field] = req.body[field];
+		}
+    });
+
+	//Logo
+	if (req.file){
+        // 1. Create correct folder for images if not exists
+        const folder_dir =  common.getConfigValue('uploads').upload_dir + "/store/" + id;
+        const full_folder_dir = __basedir + '/' + folder_dir;
+        if (!fs.existsSync(full_folder_dir)) {
+            logger.debug("make dir: " + full_folder_dir);
+            fs.mkdirSync(full_folder_dir);
+        }
+
+        //move images. tmp -> new folder
+        const oldPath = __basedir + '/' + req.file.path;
+        const newPath = full_folder_dir + '/' + req.file.filename;
+        fs.renameSync(oldPath, newPath);
+        logger.debug("move file: " + oldPath + "->" + newPath);
+
+        //create and add url
+        const url = common.apiBaseURL() + '/' + folder_dir + '/' + req.file.filename;
+        data_update.avatar = url;
+	}
 
     new Promise(function(resolve, reject) {
-        if (data.address_name){
-			googleMaps.processAddress(data.address_name)
+        if (data_update.address){
+			googleMaps.processAddress(data_update.address)
 			.then(address => {
 				data_update.address = address;
 				resolve(data_update);
