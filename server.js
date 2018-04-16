@@ -21,14 +21,9 @@ db_tools.DBConnectMongoose()
         app.use(bodyparser.json({limit: '10mb'}));
 
         app.use(express.static(__dirname + '/src/assets'));
-        //app.use(express.static(__dirname + '/uploads/'));
         app.use('/uploads', express.static(__dirname + '/uploads'));
 
         app.set('logger',logger);
-
-        app.get("/", function(req, res) {
-            res.sendFile(__dirname + "/src/updateStore.html");
-        });
 
         routes.assignRoutes(app);
 
