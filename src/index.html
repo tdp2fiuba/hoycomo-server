@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+    <meta charset="utf-8" />
+
+    <title>Upload images to server using Node JS</title>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+    <script src="http://malsup.github.io/min/jquery.form.min.js"></script>
+
+</head>
+
+<body>
+
+<form id="frmUploader" enctype="multipart/form-data" action="api/dish" method="post">
+    <label>
+        <input type="text" name="dish[name]" id="name" placeholder="Name"/>
+    </label>
+    <label>
+        <input type="number" name="dish[price]" id="price" placeholder="Price"/>
+    </label>
+    <label>
+        <input type="number" name="dish[store_id]" id="store_id" placeholder="Store id"/>
+    </label>
+
+    <input type="file" name="pictures" id="pictures" multiple />
+
+    <input type="button" name="submit" id="btnSubmit" value="Upload" onclick="send();return false;"/> </form>
+
+<script>
+    function send() {
+        $.ajax({
+            url: "api/dish",
+            type: "post",
+            data: new FormData(document.getElementById('frmUploader')),
+            contentType: false,
+            cache: false,
+            processData:false,
+        })
+        .done(function(res){
+            console.log(res);
+        });
+    }
+</script>
+
+</body>
+
+</html>

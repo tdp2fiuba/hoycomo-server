@@ -22,6 +22,36 @@ var storeSchema = new Schema({
     max : {type : Number},
     min : {type : Number}
   },
+  availability: {
+      monday: {
+          start_time: {type: String},
+          end_time: {type: String}
+      },
+      tuesday: {
+          start_time: {type: String},
+          end_time: {type: String}
+      },
+      wednesday: {
+          start_time: {type: String},
+          end_time: {type: String}
+      },
+      thursday: {
+          start_time: {type: String},
+          end_time: {type: String}
+      },
+      friday: {
+          start_time: {type: String},
+          end_time: {type: String}
+      },
+      saturday: {
+          start_time: {type: String},
+          end_time: {type: String}
+      },
+      sunday: {
+          start_time: {type: String},
+          end_time: {type: String}
+      }
+  },
   suspended: {type: Boolean, default: false}
 });
 

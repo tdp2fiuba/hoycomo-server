@@ -167,7 +167,7 @@ exports.update = function (req, res) {
 
 	const fields = ['name','business_name','availability','address'];
 
-	fields.each(function (field) {
+	fields.forEach(function (field) {
 		if (req.body[field]){
 			data_update[field] = req.body[field];
 		}
