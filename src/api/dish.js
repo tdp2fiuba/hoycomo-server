@@ -24,13 +24,9 @@ function dishToFront(dish) {
 }
 
 exports.create = function (req, res) {
-    const dish = req.body.dish;
-    if (!dish){
-        return common.handleError(res,{code:common.ERROR_PARAMETER_MISSING,message:"Parámetros inválidos o insuficientes"},HttpStatus.BAD_REQUEST);
-    }
-    const name = dish.name;
-    const price = dish.price;
-    const store_id = dish.store_id;
+    const name = req.body.name;
+    const price = req.body.price;
+    const store_id = req.body.store_id;
 
     if (! common.checkDefinedParameters([name,price,store_id],"add dish")){
         return common.handleError(res,{code:common.ERROR_PARAMETER_MISSING,message:"Parámetros inválidos o insuficientes"},HttpStatus.BAD_REQUEST);
@@ -42,8 +38,8 @@ exports.create = function (req, res) {
         store_id: store_id
     };
 
-    if (dish.discount){
-        dishData.discount = dish.discount;
+    if (req.body.discount){
+        dishData.discount = req.body.discount;
     }
 
     Store.getStoreByID(store_id)
