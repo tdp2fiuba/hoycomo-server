@@ -13,6 +13,7 @@ var storeSchema = new Schema({
   register_timestamp : { type: Date, default: Date.now },
   last_edit_timestamp : { type: Date, default: Date.now },
   email : { type: String },
+  avatar: {type: String},
   address : {
         name : {type : String},
         lat : {type : Number},
