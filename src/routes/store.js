@@ -4,7 +4,7 @@ const upload = require('../models/file').upload;
 const apiHostBase = config.api_host_base;
 
 exports.assignRoutes = function (app) {
-	store.config({db: app.get('db') , logger: app.get('logger')});
+	store.config({db: app.get('db')});
 	
 	//Create store
 	app.post(apiHostBase + '/store',store.create);

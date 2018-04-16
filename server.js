@@ -24,7 +24,7 @@ db_tools.DBConnectMongoose()
         //app.use(express.static(__dirname + '/uploads/'));
         app.use('/uploads', express.static(__dirname + '/uploads'));
 
-        app.set('logger',logger);
+        // app.set('logger',logger);
 
         app.get("/", function(req, res) {
             res.sendFile(__dirname + "/src/index.html");

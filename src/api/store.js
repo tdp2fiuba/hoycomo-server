@@ -3,6 +3,7 @@ var HttpStatus = require('http-status-codes');
 var Store = require('../models/store.js');
 var common = require('../utils/common.js');
 var googleMaps = require('../models/googlemaps.js');
+var fs = require('fs');
 var logger;
 
 var mocks = require('../utils/mocks.js');
@@ -165,32 +166,34 @@ exports.update = function (req, res) {
 		return common.handleError(res,{code:common.ERROR_PARAMETER_MISSING,message:"Breach of preconditios (missing parameters)"},HttpStatus.NOT_ACCEPTABLE);
 	}
 
-	const fields = ['name','business_name','availability','address'];
+	const fields = ['name','availability','address'];
 
-	fields.each(function (field) {
+	fields.forEach(function (field) {
 		if (req.body[field]){
 			data_update[field] = req.body[field];
 		}
     });
 
 	//Logo
-	if (req.file){
+	if (req.body.avatar){
         // 1. Create correct folder for images if not exists
         const folder_dir =  common.getConfigValue('uploads').upload_dir + "/store/" + id;
         const full_folder_dir = __basedir + '/' + folder_dir;
         if (!fs.existsSync(full_folder_dir)) {
-            logger.debug("make dir: " + full_folder_dir);
+            console.log("make dir: " + full_folder_dir);
             fs.mkdirSync(full_folder_dir);
         }
 
-        //move images. tmp -> new folder
-        const oldPath = __basedir + '/' + req.file.path;
-        const newPath = full_folder_dir + '/' + req.file.filename;
-        fs.renameSync(oldPath, newPath);
-        logger.debug("move file: " + oldPath + "->" + newPath);
+		//move images. tmp -> new folder
+		const newPath = full_folder_dir;
+		let base64Data = req.body.avatar.replace(/^data:image\/png;base64,/, "");
 
+		require("fs").writeFile(newPath + "/" + req.body.name + "-logo.png", base64Data, 'base64', function(err) {
+			console.log(err);
+		});
+		
         //create and add url
-        const url = common.apiBaseURL() + '/' + folder_dir + '/' + req.file.filename;
+        const url = common.apiBaseURL() + '/' + folder_dir + '/' + req.body.name + "-logo.png";
         data_update.avatar = url;
 	}
 
@@ -210,7 +213,7 @@ exports.update = function (req, res) {
 			res.status(HttpStatus.OK).json(storeToFront(store));
 		})
 		.catch(err => {
-			logger.error("Error on update store " + err);
+			console.log("Error on update store " + err);
 			res.status(HttpStatus.INTERNAL_SERVER_ERROR).json("Error al actualizar el comercio");
 		});
 	});
