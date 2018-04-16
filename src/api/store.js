@@ -1,11 +1,13 @@
 //Store API methods
-var HttpStatus = require('http-status-codes');
-var Store = require('../models/store.js');
-var common = require('../utils/common.js');
-var googleMaps = require('../models/googlemaps.js');
-var logger;
+const HttpStatus = require('http-status-codes');
+const Store = require('../models/store.js');
+const common = require('../utils/common.js');
+const googleMaps = require('../models/googlemaps.js');
+const fs = require('fs');
+const uuid = require('uuid');
+let logger;
 
-var mocks = require('../utils/mocks.js');
+const mocks = require('../utils/mocks.js');
 
 exports.config = function(config){
 	logger = config.logger;
@@ -173,8 +175,9 @@ exports.update = function (req, res) {
 		}
     });
 
-	//Logo
-	if (req.file){
+	//Avatar
+	if (req.body.avatar){
+		const file = req.body.avatar;
         // 1. Create correct folder for images if not exists
         const folder_dir =  common.getConfigValue('uploads').upload_dir + "/store/" + id;
         const full_folder_dir = __basedir + '/' + folder_dir;
@@ -183,15 +186,24 @@ exports.update = function (req, res) {
             fs.mkdirSync(full_folder_dir);
         }
 
-        //move images. tmp -> new folder
-        const oldPath = __basedir + '/' + req.file.path;
-        const newPath = full_folder_dir + '/' + req.file.filename;
-        fs.renameSync(oldPath, newPath);
-        logger.debug("move file: " + oldPath + "->" + newPath);
+        //store base64 image
+        const type = file.type;
+        const matches = file.data.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
+
+        if (matches.length !== 3) {
+            logger.error('Invalid data image input');
+            return;
+        }
+        const base64Image = matches[2];
+        const filename = uuid.v1() + '.' + type;
+        const imagePath = full_folder_dir + '/' + filename;
+
+        //write file in system
+        fs.writeFileSync(imagePath, base64Image, {encoding: 'base64'});
+        logger.debug("file created in: " + imagePath);
 
         //create and add url
-        const url = common.apiBaseURL() + '/' + folder_dir + '/' + req.file.filename;
-        data_update.avatar = url;
+        data_update.avatar = common.apiBaseURL() + '/' + folder_dir + '/' + filename;
 	}
 
     new Promise(function(resolve, reject) {

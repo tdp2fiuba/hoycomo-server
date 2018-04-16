@@ -27,7 +27,7 @@ db_tools.DBConnectMongoose()
         app.set('logger',logger);
 
         app.get("/", function(req, res) {
-            res.sendFile(__dirname + "/src/index.html");
+            res.sendFile(__dirname + "/src/updateStore.html");
         });
 
         routes.assignRoutes(app);

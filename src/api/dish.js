@@ -3,6 +3,7 @@ const Dish = require('../models/dish.js');
 const Store = require('../models/store.js');
 const common = require('../utils/common.js');
 const fs = require('fs');
+const uuid = require('uuid');
 let logger;
 
 exports.config = function(config){
@@ -53,10 +54,10 @@ exports.create = function (req, res) {
         }
         Dish.createDish(dishData)
             .then(dish => {
-                if (req.files){
+                if (req.body.pictures && (req.body.pictures.length > 0)){
                     //process images and store url in dish
                     const pictures = [];
-                    req.files.forEach(function (file) {
+                    req.body.pictures.forEach(function (file) {
                         // 1. Create correct folder for images if not exists
                         const folder_dir =  common.getConfigValue('uploads').upload_dir + "/dish/" + dish.dish_id;
                         const full_folder_dir = __basedir + '/' + folder_dir;
@@ -65,14 +66,24 @@ exports.create = function (req, res) {
                             fs.mkdirSync(full_folder_dir);
                         }
 
-                        //move images. tmp -> new folder
-                        const oldPath = __basedir + '/' + file.path;
-                        const newPath = full_folder_dir + '/' + file.filename;
-                        fs.renameSync(oldPath, newPath);
-                        logger.debug("move file: " + oldPath + "->" + newPath);
+                        //store base64 image
+                        const type = file.type;
+                        const matches = file.data.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
+
+                        if (matches.length !== 3) {
+                            logger.error('Invalid data image input');
+                            return;
+                        }
+                        const base64Image = matches[2];
+                        const filename = uuid.v1() + '.' + type;
+                        const imagePath = full_folder_dir + '/' + filename;
+
+                        //write file in system
+                        fs.writeFileSync(imagePath, base64Image, {encoding: 'base64'});
+                        logger.debug("file created in: " + imagePath);
 
                         //create and add url
-                        const url = common.apiBaseURL() + '/' + folder_dir + '/' + file.filename;
+                        const url = common.apiBaseURL() + '/' + folder_dir + '/' + filename;
                         pictures.push(url);
                     });
 
