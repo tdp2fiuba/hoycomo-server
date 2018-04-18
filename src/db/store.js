@@ -7,11 +7,12 @@ Schema   = mongoose.Schema;
 var storeSchema = new Schema({
   name: { type: String },
   description : { type: String },
-  login : { type: String },
+  login : { type: String, unique: true },
   password : { type: String},
   business_name : {type: String},
   register_timestamp : { type: Date, default: Date.now },
   last_edit_timestamp : { type: Date, default: Date.now },
+  state : { type: Number, default: 1 },
   email : { type: String },
   avatar: {type: String},
   address : {

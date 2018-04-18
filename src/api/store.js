@@ -122,7 +122,7 @@ exports.create = function (req, res) {
 	})
 	.catch(err => {
         logger.error("Error on create store " + err);
-		return common.handleError(res,{code:common.ERROR_INSERT_DB,message:"Error al validar la dirección."},HttpStatus.NOT_ACCEPTABLE);
+		return common.handleError(res,{code:common.ERROR_INSERT_DB,message:"Error al validar la dirección: " + err},HttpStatus.NOT_ACCEPTABLE);
 	})
 };
 
