@@ -4,7 +4,8 @@
 - key:
 	`user_id : string`
 - value:
-```{
+```
+{
     first_name:    { type: String },
     last_name:     { type: Number },
     description : { type: String },
@@ -36,7 +37,8 @@
 - key:
 	`store_id : string`
 - value:
-```{
+```
+{
   name: { type: String },
   description : { type: String },
   login : { type: String, unique: true },
@@ -94,7 +96,8 @@
 - key:
 	`dish_id : string`
 - value:
-```{
+```
+{
     store_id: {type: Number},
     name: { type: String },
     price : { type: Number },
