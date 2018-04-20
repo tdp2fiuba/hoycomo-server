@@ -54,7 +54,7 @@ function storeToFront(store) {
         name: store.name,
         business_name: store.business_name,
         address: store.address,
-
+		email: store.email,
 		//mock
 
 		avatar: store.avatar ? store.avatar : common.apiBaseURL() + '/images' + '/avatar_default.jpg',
@@ -69,15 +69,12 @@ function storeToFront(store) {
 }
 
 exports.create = function (req, res) {
-	var store = req.body.store;
-	if (!store){
-        return common.handleError(res,{code:common.ERROR_PARAMETER_MISSING,message:"Parámetros inválidos o insuficientes"},HttpStatus.BAD_REQUEST);
-	}
-	var name = store.name;
-	var business_name = store.business_name;
-	var address_name = store.address;
+	const name = req.body.name;
+	const business_name = req.body.business_name;
+	const address_name = req.body.address;
+    const email = req.body.email;
 
-	if (! common.checkDefinedParameters([name,business_name,address_name],"add store")){
+	if (! common.checkDefinedParameters([name,business_name,address_name,email],"add store")){
 		return common.handleError(res,{code:common.ERROR_PARAMETER_MISSING,message:"Parámetros inválidos o insuficientes"},HttpStatus.BAD_REQUEST);
 	}
 
@@ -92,9 +89,15 @@ exports.create = function (req, res) {
 	});
 	*/
 
-	var storeData = {
+	//validate email
+	if (!common.validateEmail(email)) {
+        return common.handleError(res,{code:common.ERROR_INSERT_DB,message:"Email inválido"},HttpStatus.NOT_ACCEPTABLE);
+	}
+
+	const storeData = {
 		name : name,
-		business_name : business_name
+		business_name : business_name,
+		email: email
 	};
 
 	//process address
@@ -111,7 +114,8 @@ exports.create = function (req, res) {
 			Store.createStore(store_data)
 			.then(store => {
 				logger.info("Store created:" + store_data);
-				res.status(HttpStatus.CREATED).json({user:store.login, password: store.password});
+				//send email
+				res.status(HttpStatus.CREATED).json({user:store.login, password: store.password,email: store.email});
 			})
 			.catch(err => {
                 logger.error("Error on update store " + err);
