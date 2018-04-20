@@ -1,6 +1,6 @@
 const apiUtilsBase = '/utils';
-var googleMaps = require('../models/googlemaps.js');
-var HttpStatus = require('http-status-codes');
+const googleMaps = require('../models/googlemaps.js');
+const HttpStatus = require('http-status-codes');
 
 exports.assignRoutes = function (app) {	
 	//validate address
@@ -15,4 +15,4 @@ exports.assignRoutes = function (app) {
 			res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({error: err});
 		})
 	});
-}
+};

@@ -5,6 +5,7 @@ const common = require('../utils/common.js');
 const googleMaps = require('../models/googlemaps.js');
 const fs = require('fs');
 const uuid = require('uuid');
+const mailing = require('../tools/mailing.js');
 let logger;
 
 const mocks = require('../utils/mocks.js');
@@ -114,7 +115,10 @@ exports.create = function (req, res) {
 			Store.createStore(store_data)
 			.then(store => {
 				logger.info("Store created:" + store_data);
-				//send email
+
+				//send email con credenciales
+                mailing.sendHTMLMail(store.email,store_data.name + " bienvenido a HoyComo", "<p><em><strong>Hoy Como </strong></em>le da la bienvenida a <strong>"+ store_data.name +".</strong></p><p>Los datos para ingresar al sistema son los siguientes:</p><ul><li><strong>Usuario: </strong>"+ store.login +"</li><li><strong>Contrase&ntilde;a: </strong>"+ store.password +"</li></ul><p>Te recomendamos cambiar la contrase&ntilde;a por una que sea de tu agrado.</p><p>&iexcl;A vender!</p>");
+
 				res.status(HttpStatus.CREATED).json({user:store.login, password: store.password,email: store.email});
 			})
 			.catch(err => {
