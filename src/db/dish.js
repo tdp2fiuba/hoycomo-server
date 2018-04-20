@@ -1,10 +1,10 @@
 const mongoose = require('mongoose');
 const AutoIncrement = require('mongoose-sequence')(mongoose);
-
+const mongoose_delete = require('mongoose-delete');
 
 Schema   = mongoose.Schema;
 
-const storeDish = new Schema({
+const dishSchema = new Schema({
     store_id: {type: Number},
     name: { type: String },
     price : { type: Number },
@@ -14,14 +14,15 @@ const storeDish = new Schema({
     last_edit_timestamp : { type: Date, default: Date.now }
 });
 
-storeDish.plugin(AutoIncrement, {inc_field: 'dish_id'});
+dishSchema.plugin(AutoIncrement, {inc_field: 'dish_id'});
+dishSchema.plugin(mongoose_delete,{ deletedAt : true, overrideMethods: true });
 
-var Dish = mongoose.model('Dish',storeDish);
+const Dish = mongoose.model('Dish',dishSchema);
 
 exports.Dish = Dish;
 
 exports.saveDish = function(dish_data) {
-    var dish = new Dish(dish_data);
+    const dish = new Dish(dish_data);
     return new Promise(function(resolve, reject) {
         dish.save()
             .then(store => {
@@ -86,15 +87,20 @@ exports.getDishs = function(data) {
     })
 };
 
-exports.delete = function(id) {
+exports.delete = function(dish_id) {
     return new Promise(function(resolve, reject) {
-        Dish.findOneAndRemove({dish_id:id})
-            .then(() => {
+        Dish.delete({dish_id:dish_id},function (err,result) {
+            if (!err){
                 resolve(true);
-            })
-            .catch(err => {
+                console.log("Borrado logico de plato con id:" + dish_id);
+            } else {
                 console.log(err);
                 reject("Error al eliminar el plato.");
-            });
-    })
+            }
+        })
+    });
+};
+
+exports.forceDelete = function (dish_id) {
+    return Dish.findOneAndRemove({ dish_id: dish_id});
 };

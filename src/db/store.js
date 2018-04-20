@@ -1,10 +1,10 @@
 const mongoose = require('mongoose');
 const AutoIncrement = require('mongoose-sequence')(mongoose);
-
+const mongoose_delete = require('mongoose-delete');
 
 Schema   = mongoose.Schema;	
 
-var storeSchema = new Schema({
+const storeSchema = new Schema({
   name: { type: String },
   description : { type: String },
   login : { type: String, unique: true },
@@ -53,18 +53,18 @@ var storeSchema = new Schema({
           start_time: {type: String},
           end_time: {type: String}
       }
-  },
-  suspended: {type: Boolean, default: false}
+  }
 });
 
 storeSchema.plugin(AutoIncrement, {inc_field: 'store_id'});
+storeSchema.plugin(mongoose_delete, { deletedAt : true, overrideMethods: true });
 
-var Store = mongoose.model('Store',storeSchema);
+const Store = mongoose.model('Store',storeSchema);
 
 exports.Store = Store;
 
 exports.saveStore = function(store_data) {
-    var store = new Store(store_data);
+    const store = new Store(store_data);
     return new Promise(function(resolve, reject) {
         store.save()
             .then(store => {
@@ -112,6 +112,20 @@ exports.getStoreUser = function (credentials) {
     return Store.findOne({ login: credentials.login, password: credentials.password });
 };
 
-exports.delete = function (store_id) {
+exports.delete = function(store_id) {
+    return new Promise(function(resolve, reject) {
+        Store.delete({store_id:store_id},function (err,result) {
+            if (!err){
+                resolve(true);
+                console.log("Borrado logico comercio con id:" + store_id);
+            } else {
+                console.log(err);
+                reject("Error al eliminar el comercio.");
+            }
+        })
+    });
+};
+
+exports.forceDelete = function (store_id) {
     return Store.findOneAndRemove({ store_id: store_id});
 };
