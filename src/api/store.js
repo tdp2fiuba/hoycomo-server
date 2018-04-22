@@ -57,7 +57,7 @@ function storeToFront(store) {
         address: store.address,
 		email: store.email,
 		//mock
-
+		foodTypes: store.foodTypes,
 		avatar: store.avatar ? store.avatar : common.apiBaseURL() + '/images' + '/avatar_default.jpg',
 		delay_time: {
         	min: minMock,
