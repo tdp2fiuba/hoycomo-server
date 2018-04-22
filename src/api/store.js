@@ -175,7 +175,7 @@ exports.update = function (req, res) {
 		return common.handleError(res,{code:common.ERROR_PARAMETER_MISSING,message:"Breach of preconditios (missing parameters)"},HttpStatus.NOT_ACCEPTABLE);
 	}
 
-	const fields = ['name','business_name','availability','address'];
+	const fields = ['name','business_name','availability','address', "foodTypes"];
 
 	fields.forEach(function (field) {
 		if (req.body[field]){
