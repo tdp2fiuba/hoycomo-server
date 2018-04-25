@@ -184,34 +184,39 @@ exports.update = function (req, res) {
     });
 
 	//Avatar
-	if (req.body.avatar){
-		const file = req.body.avatar;
-        // 1. Create correct folder for images if not exists
-        const folder_dir =  common.getConfigValue('uploads').upload_dir + "/store/" + id;
-        const full_folder_dir = __basedir + '/' + folder_dir;
-        if (!fs.existsSync(full_folder_dir)) {
-            logger.debug("make dir: " + full_folder_dir);
-            fs.mkdirSync(full_folder_dir);
-        }
+	if (req.body.avatar ){
+		if (req.body.avatar.data.indexOf('http') === -1) {
+			const file = req.body.avatar;
+			// 1. Create correct folder for images if not exists
+			const folder_dir =  common.getConfigValue('uploads').upload_dir + "/store/" + id;
+			const full_folder_dir = __basedir + '/' + folder_dir;
+			if (!fs.existsSync(full_folder_dir)) {
+				logger.debug("make dir: " + full_folder_dir);
+				fs.mkdirSync(full_folder_dir);
+			}
 
-        //store base64 image
-        const type = file.type;
-        const matches = file.data.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
+			//store base64 image
+			const type = file.type;
+			const matches = file.data.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
 
-        if (matches.length !== 3) {
-            logger.error('Invalid data image input');
-            return;
-        }
-        const base64Image = matches[2];
-        const filename = uuid.v1() + '.' + type;
-        const imagePath = full_folder_dir + '/' + filename;
+			if (matches.length !== 3) {
+				logger.error('Invalid data image input');
+				return;
+			}
+			const base64Image = matches[2];
+			const filename = uuid.v1() + '.' + type;
+			const imagePath = full_folder_dir + '/' + filename;
 
-        //write file in system
-        fs.writeFileSync(imagePath, base64Image, {encoding: 'base64'});
-        logger.debug("file created in: " + imagePath);
+			//write file in system
+			fs.writeFileSync(imagePath, base64Image, {encoding: 'base64'});
+			logger.debug("file created in: " + imagePath);
 
-        //create and add url
-        data_update.avatar = common.apiBaseURL() + '/' + folder_dir + '/' + filename;
+			//create and add url
+			data_update.avatar = common.apiBaseURL() + '/' + folder_dir + '/' + filename;
+		}
+		else {
+			data_update.avatar = req.body.avatar.data;
+		}
 	}
 
     new Promise(function(resolve, reject) {
