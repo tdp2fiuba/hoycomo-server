@@ -35,12 +35,12 @@ exports.saveDish = function(dish_data) {
 };
 
 exports.updateDish = function(dish_id,dish_data) {
-    return Dish.findOneAndUpdate({dish_id : dish_id},dish_data);
+    return Dish.findOneAndUpdate({dish_id : dish_id},dish_data,{new: true});
 };
 
 exports.updatePictures = function(dish_id,pictures){
   const data = {pictures: pictures};
-  return Dish.findOneAndUpdate({dish_id : dish_id},data);
+  return Dish.findOneAndUpdate({dish_id : dish_id},data,{new: true});
 };
 
 exports.getDishById = function(dish_id) {

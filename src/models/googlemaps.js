@@ -12,6 +12,8 @@ exports.processAddress = function(address_name){
 			throw "La dirección ingresada es inválida.";
 		}
 
+		//Fix error google en PaseoColon 850
+
 		if (result.address_components[4].short_name !== "CABA"){
 			//por el momento solo se soportan direcciones en CABA
             throw "Por el momento sólo se aceptan direcciones dentro de CABA.";

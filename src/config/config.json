@@ -3,9 +3,5 @@
         "port"     : 8080
     },
     "api_host_base" : "/api",
-    "uploads": {
-        "temp_upload_dir": "uploads/tmp",
-        "upload_dir": "uploads"
-    },
-    "api_image_base" : "/image"
+    "api_image_base" : "/images"
 }

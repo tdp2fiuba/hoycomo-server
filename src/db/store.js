@@ -105,7 +105,7 @@ exports.getStores = function(data) {
 };
 
 exports.updateStore = function(store_id,data) {
-    return Store.findOneAndUpdate({store_id : store_id},data);
+    return Store.findOneAndUpdate({store_id : store_id},data,{new: true});
 };
 
 exports.getStoreUser = function (credentials) {

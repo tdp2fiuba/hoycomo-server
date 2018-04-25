@@ -2,8 +2,7 @@ const HttpStatus = require('http-status-codes');
 const Dish = require('../models/dish.js');
 const Store = require('../models/store.js');
 const common = require('../utils/common.js');
-const fs = require('fs');
-const uuid = require('uuid');
+const imageDB = require('../db/image.js');
 let logger;
 
 exports.config = function(config){
@@ -44,70 +43,53 @@ exports.create = function (req, res) {
 
     Store.getStoreByID(store_id)
     .then(store => {
-        if (!store){
+        if (!store) {
             logger.error("Error on add dish, store non exist. store_id: " + store_id);
-            return res.status(HttpStatus.NOT_FOUND).json("Error al agregar un plato, no existe el comercio");
+            return common.handleError(res,{code:common.ERROR_PARAMETER_MISSING,message:"Error al agregar un plato, no existe el comercio"},HttpStatus.NOT_FOUND);
         }
-        Dish.createDish(dishData)
-            .then(dish => {
-                if (req.body.pictures && (req.body.pictures.length > 0)){
-                    //process images and store url in dish
-                    const pictures = [];
-                    req.body.pictures.forEach(function (file) {
-                        // 1. Create correct folder for images if not exists
-                        const folder_dir =  common.getConfigValue('uploads').upload_dir + "/dish/" + dish.dish_id;
-                        const full_folder_dir = __basedir + '/' + folder_dir;
-                        if (!fs.existsSync(full_folder_dir)) {
-                            logger.debug("make dir: " + full_folder_dir);
-                            fs.mkdirSync(full_folder_dir);
-                        }
 
-                        //store base64 image
-                        const type = file.type;
-                        const matches = file.data.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
+        const files = req.body.pictures;
+        if (files && (files.length > 0)) {
+            const pictures = [];
 
-                        if (matches.length !== 3) {
-                            logger.error('Invalid data image input');
-                            return;
-                        }
-                        const base64Image = matches[2];
-                        const filename = uuid.v1() + '.' + type;
-                        const imagePath = full_folder_dir + '/' + filename;
-
-                        //write file in system
-                        fs.writeFileSync(imagePath, base64Image, {encoding: 'base64'});
-                        logger.debug("file created in: " + imagePath);
-
-                        //create and add url
-                        const url = common.apiBaseURL() + '/' + folder_dir + '/' + filename;
-                        pictures.push(url);
+            files.forEach(function (file) {
+                if (!file.data || !file.type) {
+                    throw "Imágenes mal definidas";
+                }
+                pictures.push(file);
+            });
+            return imageDB.saveImages(pictures)
+                .then(images => {
+                    const images_dish = [];
+                    images.forEach(function (img) {
+                        images_dish.push(common.apiBaseURL() + common.getConfigValue('api_host_base') + common.getConfigValue('api_image_base') + '/' + img.image_id);
                     });
 
-                    //update dish with pictures array
-                    Dish.updateDishPictures(dish,pictures)
-                        .then(dish => {
-                            logger.info("Dish created:" + dish);
-                            res.status(HttpStatus.CREATED).json(dishToFront(dish));
-                        })
-                        .catch(err => {
-                            logger.error("Error on append pictures of dish " + err);
-                            //TODO: delete dish?
-                            return common.handleError(res,{code:common.ERROR_INSERT_DB,message:"Error agregando las imagenes al plato"},HttpStatus.NOT_ACCEPTABLE);
-                        });
-
-                } else {
-                    logger.info("Dish created:" + dish);
-                    res.status(HttpStatus.CREATED).json(dishToFront(dish));
-                }
-            })
-            .catch(err => {
-                logger.error("Error on create dish " + err);
-                return common.handleError(res,{code:common.ERROR_INSERT_DB,message:"Error interno al crear el plato "},HttpStatus.NOT_ACCEPTABLE);
-            });
+                    dishData.pictures = images_dish;
+                    return Promise.resolve(dishData);
+                })
+                .catch(err => {
+                    logger.error("Error al agregar las imágenes " + err);
+                    return Promise.reject("Imágenes mal definidas.");
+                });
+        } else {
+            return Promise.resolve(dishData);
+        }
+    })
+    .then(dishData => {
+        Dish.createDish(dishData)
+        .then(dish => {
+            logger.info("Dish created:" + dish);
+            res.status(HttpStatus.CREATED).json(dishToFront(dish));
+        })
+        .catch(err => {
+            logger.error("Error on create dish " + err);
+            return common.handleError(res,{code:common.ERROR_INSERT_DB,message:"Error interno al crear el plato "},HttpStatus.NOT_ACCEPTABLE);
+        });
     })
     .catch(err => {
-        logger.error("Error on add dish store non exist" + err);
-        res.status(HttpStatus.NOT_FOUND).json("Error al agregar un plato, no existe el comercio");
+        logger.error("Error " + err);
+        return common.handleError(res,{code:common.ERROR_PARAMETER_MISSING,message:"Error al agregar el plato, " + err},HttpStatus.NOT_FOUND);
     });
 
 };
