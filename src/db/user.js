@@ -50,12 +50,12 @@ exports.saveUser = function(user_data) {
 };
 
 exports.updateUser = function(user_id,user_data) {
-    return User.findOneAndUpdate({user_id : user_id},user_data);
+    return User.findOneAndUpdate({user_id : user_id},user_data,{new: true});
 };
 
 exports.updateAvatar = function(user_id,avatar){
     const data = {avatar: avatar};
-    return User.findOneAndUpdate({user_id : user_id},data);
+    return User.findOneAndUpdate({user_id : user_id},data,{new: true});
 };
 
 exports.getUserById = function(user_id) {

@@ -1,6 +1,5 @@
 const store = require('../api/store.js');
 const config = require('../config/config.json');
-const upload = require('../models/file').upload;
 const apiHostBase = config.api_host_base;
 
 exports.assignRoutes = function (app) {
@@ -13,7 +12,7 @@ exports.assignRoutes = function (app) {
 	app.get(apiHostBase + '/store/:store_id',store.read);
 	
 	//Update store
-	app.put(apiHostBase + '/store/:store_id', upload.single('avatar') ,store.update);
+	app.put(apiHostBase + '/store/:store_id', store.update);
 	
 	//Delete store
 	app.delete(apiHostBase + '/store/:store_id',store.delete);

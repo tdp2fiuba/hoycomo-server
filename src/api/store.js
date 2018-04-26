@@ -3,12 +3,9 @@ const HttpStatus = require('http-status-codes');
 const Store = require('../models/store.js');
 const common = require('../utils/common.js');
 const googleMaps = require('../models/googlemaps.js');
-const fs = require('fs');
-const uuid = require('uuid');
+const imageDB = require('../db/image.js');
 const mailing = require('../tools/mailing.js');
 let logger;
-
-const mocks = require('../utils/mocks.js');
 
 exports.config = function(config){
 	logger = config.logger;
@@ -183,6 +180,7 @@ exports.update = function (req, res) {
 		}
     });
 
+<<<<<<< HEAD
 	//Avatar
 	if (req.body.avatar ){
 		if (req.body.avatar.data.indexOf('http') === -1) {
@@ -218,19 +216,38 @@ exports.update = function (req, res) {
 			data_update.avatar = req.body.avatar.data;
 		}
 	}
+=======
+>>>>>>> master
 
     new Promise(function(resolve, reject) {
-        if (data_update.address){
-			googleMaps.processAddress(data_update.address)
-			.then(address => {
-				data_update.address = address;
-				resolve(data_update);
+        //Avatar
+        if (req.body.avatar){
+            const file = req.body.avatar;
+
+            imageDB.saveImage(file)
+			.then( image => {
+				data_update.avatar = common.apiBaseURL() + common.getConfigValue('api_host_base') + common.getConfigValue('api_image_base') +'/' + image.image_id;
+                resolve(data_update);
 			})
-		}
-		resolve(data_update);
+			.catch(err => {
+				reject(err);
+			});
+        } else {
+            resolve(data_update);
+        }
     })
-	.then( data_update => {
-        Store.updateStore(id,data_update)
+	.then(data_update => {
+		if (data_update.address) {
+            googleMaps.processAddress(data_update.address)
+                .then(address => {
+                    data_update.address = address;
+                    return Promise.resolve(data_update);
+                })
+        } else {
+            return Promise.resolve(data_update);
+        }
+    }).then( data_update => {
+    	Store.updateStore(id,data_update)
 		.then(store => {
 			res.status(HttpStatus.OK).json(storeToFront(store));
 		})
