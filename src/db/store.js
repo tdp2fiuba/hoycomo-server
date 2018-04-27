@@ -59,6 +59,16 @@ const storeSchema = new Schema({
 storeSchema.plugin(AutoIncrement, {inc_field: 'store_id'});
 storeSchema.plugin(mongoose_delete, { deletedAt : true, overrideMethods: true });
 
+storeSchema.methods.validPassword = function(candidatePassword, cb) {
+    return this.password == candidatePassword;
+    //bcrypt.compare(candidatePassword, this.password, function(err, isMatch) {
+    //    if (err) return cb(err);
+    //    cb(null, isMatch);
+    //});
+};
+
+
+
 const Store = mongoose.model('Store',storeSchema);
 
 exports.Store = Store;
@@ -110,6 +120,10 @@ exports.updateStore = function(store_id,data) {
 
 exports.getStoreUser = function (credentials) {
     return Store.findOne({ login: credentials.login, password: credentials.password });
+};
+
+exports.findStoreByLogin = function(login){
+    return Store.findOne({ login: login });
 };
 
 exports.delete = function(store_id) {

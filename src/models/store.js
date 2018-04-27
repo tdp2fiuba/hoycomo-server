@@ -117,8 +117,8 @@ exports.deleteById = function (id) {
     return storeDB.delete(id);
 }
 
-exports.suspendStore = function(storeData) {
-  
+exports.findStoreByLogin = function(login) {
+    return storeDB.findStoreByLogin(login);
 };
 
 exports.deleteAll = function () {

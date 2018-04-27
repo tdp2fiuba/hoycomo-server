@@ -6,9 +6,7 @@ const mongoose_delete = require('mongoose-delete');
 const userSchema = new Schema({
     first_name:    { type: String },
     last_name:     { type: Number },
-    description : { type: String },
-    login : { type: String },
-    password : { type: String },
+    facebook_id:   { type: String },
     register_timestamp : { type: Date, default: Date.now },
     last_edit_timestamp : { type: Date, default: Date.now },
     email : { type: String },
@@ -32,6 +30,14 @@ const userSchema = new Schema({
 userSchema.plugin(AutoIncrement, {inc_field: 'user_id'});
 userSchema.plugin(mongoose_delete,{ deletedAt : true, overrideMethods: true });
 
+userSchema.methods.validPassword = function(candidatePassword, cb) {
+    return this.password == candidatePassword;
+    //bcrypt.compare(candidatePassword, this.password, function(err, isMatch) {
+    //    if (err) return cb(err);
+    //    cb(null, isMatch);
+    //});
+};
+
 const User = mongoose.model('User',userSchema);
 
 exports.User = User;
@@ -50,11 +56,12 @@ exports.saveUser = function(user_data) {
 };
 
 exports.updateUser = function(user_id,user_data) {
+    user_data.last_edit_timestamp = Date.now;
     return User.findOneAndUpdate({user_id : user_id},user_data,{new: true});
 };
 
 exports.updateAvatar = function(user_id,avatar){
-    const data = {avatar: avatar};
+    const data = {avatar: avatar, last_edit_timestamp: Date.now};
     return User.findOneAndUpdate({user_id : user_id},data,{new: true});
 };
 

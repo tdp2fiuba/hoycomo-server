@@ -1,6 +1,4 @@
-var mongoose = require('mongoose');
-var db_tools = require('../tools/db_tools');
-var Store = require('../db/store');
+const Store = require('../db/store');
 
 exports.findStore = function(credentials) {
     return new Promise(function (resolve, reject) {

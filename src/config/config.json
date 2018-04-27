@@ -2,6 +2,11 @@
     "express"  : {
         "port"     : 8080
     },
+    "facebook": {
+        "id": "201786523941932",
+        "secret": "7b1929f095749891808c484efc0b2d29"
+    } ,
     "api_host_base" : "/api",
-    "api_image_base" : "/images"
+    "api_image_base" : "/images",
+    "session_secret_key": "tdp2 hoy como Fontela"
 }

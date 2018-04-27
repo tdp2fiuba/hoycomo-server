@@ -1,20 +1,18 @@
-var HttpStatus = require('http-status-codes');
-var loginCtrl = require('../api/login');
+const login = require('../api/login.js');
+const common = require('../utils/common.js');
+const apiHostBase = common.getConfigValue('api_host_base');
+const passport = require('passport');
 
-exports.login = function(req, res) {
-    var credentials = {
-        user: req.body.user,
-        password: req.body.password
-    };
+exports.assignRoutes = function (app) {
+    login.config({logger: app.get('logger')});
 
-    loginCtrl.login(credentials).then(function (store) {
-        if (store) {
-            res.send(store);
-        } else {
-            res.status(400).send({ message: "Usuario o contraseña no encontrados" })
-        }
-    })
-    .catch(function (err) {
-        res.status(400).send(err);
-    })
-}
+    app.post(apiHostBase + "/login", login.loginStore);
+
+    app.post(apiHostBase + "/store/auth", passport.authenticate('local'), login.loginStore);
+
+    app.get(apiHostBase + "/store/logout", login.logout);
+
+    app.post(apiHostBase + '/user/auth/facebook', passport.authenticate('facebook-token'),login.loginUser);
+
+    app.get(apiHostBase + '/user/logout', login.logout);
+};

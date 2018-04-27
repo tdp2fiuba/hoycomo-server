@@ -7,7 +7,7 @@ const dishRoutes = require('./dish.js');
 const fileRoutes = require('./file.js');
 
 exports.assignRoutes = function (app) {
-    app.post(apiHostBase + "/login", loginRoutes.login);
+    loginRoutes.assignRoutes(app);
 
     storeRoutes.assignRoutes(app);
 
