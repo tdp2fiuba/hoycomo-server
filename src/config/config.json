@@ -8,5 +8,6 @@
     } ,
     "api_host_base" : "/api",
     "api_image_base" : "/images",
-    "session_secret_key": "tdp2 hoy como Fontela"
+    "session_secret_key": "tdp2 hoy como Fontela",
+    "token_secret_key": "tan secreto que lo pusheamos"
 }

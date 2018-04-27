@@ -1,4 +1,4 @@
-var storeDB = require('../db/store.js');
+const storeDB = require('../db/store.js');
 
 exports.createStore = function(store_data) {
     return new Promise(function(resolve, reject) {
@@ -115,10 +115,14 @@ exports.findSimilarLogin = function(login) {
 
 exports.deleteById = function (id) {
     return storeDB.delete(id);
-}
+};
 
 exports.findStoreByLogin = function(login) {
     return storeDB.findStoreByLogin(login);
+};
+
+exports.findStoreByID = function(store_id) {
+    return storeDB.getStoreById(store_id);
 };
 
 exports.deleteAll = function () {

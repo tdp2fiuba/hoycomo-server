@@ -7,6 +7,8 @@ const passport = require('passport');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
 require('./src/models/login.js')(passport);
+const beaber = require('./src/models/bearerAuthorization.js');
+beaber.configPassport(passport);
 
 log4js.configure('./src/config/log.conf.json');
 const logger = log4js.getLogger();

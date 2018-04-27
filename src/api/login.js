@@ -2,6 +2,7 @@ const loginDB = require('../db/loginDB');
 const HttpStatus = require('http-status-codes');
 const common = require('../utils/common.js');
 const passport = require('passport');
+const bearer = require('../models/bearerAuthorization.js');
 let logger;
 
 exports.config = function(config){
@@ -37,7 +38,7 @@ exports.loginStore = function (req, res, next) {
             return common.handleError(res,{message:info.message},HttpStatus.UNAUTHORIZED);
         }
 
-        res.status(HttpStatus.OK).send({store_id: user.store_id,name: user.name});
+        res.status(HttpStatus.OK).send({store_id: user.store_id,name: user.name, token: bearer.generateStoreToken(user)});
 
     })(req, res, next);
 };
@@ -51,7 +52,7 @@ exports.loginUser = function (req, res, next) {
             return common.handleError(res,{message:info.message},HttpStatus.UNAUTHORIZED);
         }
 
-        res.status(HttpStatus.OK).send({user_id: user.user_id,name: user.name, last_name: user.last_name});
+        res.status(HttpStatus.OK).send({user_id: user.user_id,name: user.name, last_name: user.last_name, token: bearer.generateUserToken(user)});
 
     })(req, res, next);
 };
