@@ -18,8 +18,9 @@ global.__basedir = __dirname;
 const app = express();
 db_tools.DBConnectMongoose()
     .then(() => {
+
         const routes = require('./src/routes/routes.js');
-        
+
         app.use(cors());
         app.use(bodyparser.urlencoded({extended: true}));
         app.use(bodyparser.json({limit: '10mb'}));
@@ -37,7 +38,6 @@ db_tools.DBConnectMongoose()
         app.use('/uploads', express.static(__dirname + '/uploads'));
 
         app.set('logger',logger);
-
         routes.assignRoutes(app);
 
         const port = process.env.PORT || config.express.port;
@@ -51,4 +51,4 @@ db_tools.DBConnectMongoose()
     })
     .catch(err => {
         console.log('Error: ' + err);
-})
+});

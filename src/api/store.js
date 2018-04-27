@@ -66,6 +66,8 @@ function storeToFront(store) {
 
 }
 
+exports.storeToFront = storeToFront;
+
 exports.create = function (req, res) {
 	const name = req.body.name;
 	const business_name = req.body.business_name;
@@ -132,8 +134,8 @@ exports.create = function (req, res) {
 };
 
 exports.search = function (req, res) {
-	var page = req.query.page || common.DEFAULT_PAGE;
-	var count = req.query.count || common.DEFAULT_SIZE;
+	const page = req.query.page || common.DEFAULT_PAGE;
+    const count = req.query.count || common.DEFAULT_SIZE;
 	
  	Store.getStores({page: page,count: count})
         .then(stores => {
@@ -146,7 +148,7 @@ exports.search = function (req, res) {
 };
 
 exports.read = function (req, res) {
-	var id = req.params.store_id;
+    const id = req.params.store_id;
 	
 	if (! common.checkDefinedParameters([id],"read store")){
 		return common.handleError(res,{code:common.ERROR_PARAMETER_MISSING,message:"Breach of preconditios (missing parameters)"},HttpStatus.NOT_ACCEPTABLE);
@@ -179,45 +181,6 @@ exports.update = function (req, res) {
 			data_update[field] = req.body[field];
 		}
     });
-
-<<<<<<< HEAD
-	//Avatar
-	if (req.body.avatar ){
-		if (req.body.avatar.data.indexOf('http') === -1) {
-			const file = req.body.avatar;
-			// 1. Create correct folder for images if not exists
-			const folder_dir =  common.getConfigValue('uploads').upload_dir + "/store/" + id;
-			const full_folder_dir = __basedir + '/' + folder_dir;
-			if (!fs.existsSync(full_folder_dir)) {
-				logger.debug("make dir: " + full_folder_dir);
-				fs.mkdirSync(full_folder_dir);
-			}
-
-			//store base64 image
-			const type = file.type;
-			const matches = file.data.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
-
-			if (matches.length !== 3) {
-				logger.error('Invalid data image input');
-				return;
-			}
-			const base64Image = matches[2];
-			const filename = uuid.v1() + '.' + type;
-			const imagePath = full_folder_dir + '/' + filename;
-
-			//write file in system
-			fs.writeFileSync(imagePath, base64Image, {encoding: 'base64'});
-			logger.debug("file created in: " + imagePath);
-
-			//create and add url
-			data_update.avatar = common.apiBaseURL() + '/' + folder_dir + '/' + filename;
-		}
-		else {
-			data_update.avatar = req.body.avatar.data;
-		}
-	}
-=======
->>>>>>> master
 
     new Promise(function(resolve, reject) {
         //Avatar
@@ -259,7 +222,7 @@ exports.update = function (req, res) {
 };
 
 exports.delete = function (req, res) {
-	var id = req.params.store_id;
+    const id = req.params.store_id;
 	
 	if (! common.checkDefinedParameters([id],"delete store")){
 		return common.handleError(res,{code:common.ERROR_PARAMETER_MISSING,message:"Breach of preconditios (missing parameters)"},HttpStatus.NOT_ACCEPTABLE);

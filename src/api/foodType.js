@@ -19,4 +19,4 @@ exports.getAll = (req, res) => {
             console.log(err);
             res.status(HttpStatus.INTERNAL_SERVER_ERROR).json("Error al obtener tipos de comida");
         })
-}
+};

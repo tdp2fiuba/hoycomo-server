@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const AutoIncrement = require('mongoose-sequence')(mongoose);
 const mongoose_delete = require('mongoose-delete');
-const foodTypesDB = require('./foodType')
+const foodTypesDB = require('./foodType');
 
 Schema   = mongoose.Schema;	
 
@@ -16,7 +16,7 @@ const storeSchema = new Schema({
   state : { type: Number, default: 1 },
   email : { type: String },
   avatar: {type: String},
-  foodTypes: [String],
+  foodTypes: [{type: String}],
   address : {
         name : {type : String},
         lat : {type : Number},
@@ -61,15 +61,9 @@ const storeSchema = new Schema({
 storeSchema.plugin(AutoIncrement, {inc_field: 'store_id'});
 storeSchema.plugin(mongoose_delete, { deletedAt : true, overrideMethods: true });
 
-storeSchema.methods.validPassword = function(candidatePassword, cb) {
+storeSchema.methods.validPassword = function(candidatePassword) {
     return this.password == candidatePassword;
-    //bcrypt.compare(candidatePassword, this.password, function(err, isMatch) {
-    //    if (err) return cb(err);
-    //    cb(null, isMatch);
-    //});
 };
-
-
 
 const Store = mongoose.model('Store',storeSchema);
 

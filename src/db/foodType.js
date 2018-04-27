@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const mongoose_delete = require('mongoose-delete');
 
 Schema = mongoose.Schema;
 
@@ -23,4 +22,4 @@ exports.getFoodTypes = () => {
                 reject(err) 
             });
     });
-}
+};
