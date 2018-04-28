@@ -1,5 +1,6 @@
 const user = require('../api/user.js');
 const apiHostBase = require('../config/config.json').api_host_base;
+const beaber = require('../models/bearerAuthorization.js');
 
 exports.assignRoutes = function (app) {
     user.config({logger: app.get('logger')});
@@ -8,7 +9,6 @@ exports.assignRoutes = function (app) {
     app.get(apiHostBase + '/user/:user_id',user.read);
 
     //Update store
-    //TODO VERIFICAR TOKEN
     app.put(apiHostBase + '/user/:user_id', user.update);
 
     //Delete store

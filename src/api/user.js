@@ -3,6 +3,7 @@ const User = require('../models/user.js');
 const common = require('../utils/common.js');
 const googleMaps = require('../models/googlemaps.js');
 const imageDB = require('../db/image.js');
+const beaber = require('../models/bearerAuthorization.js');
 let logger;
 
 exports.config = function(config){
@@ -55,12 +56,16 @@ exports.read = function (req, res) {
         });
 };
 
-exports.update = function (req, res) {
+function update(req,res,user){
     const id = req.params.user_id;
     const data_update = {};
 
     if (! common.checkDefinedParameters([id],"update user")){
         return common.handleError(res,{code:common.ERROR_PARAMETER_MISSING,message:"Breach of preconditios (missing parameters)"},HttpStatus.NOT_ACCEPTABLE);
+    }
+
+    if (user.user_id !== id) {
+        return common.handleError(res,{message:"Error de autorización, no puede editar otro usuario"},HttpStatus.UNAUTHORIZED);
     }
 
     const fields = ['name','last_name','address'];
@@ -108,13 +113,23 @@ exports.update = function (req, res) {
                 res.status(HttpStatus.INTERNAL_SERVER_ERROR).json("Error al actualizar el usuario");
             });
     });
+}
+
+exports.update = function (req, res) {
+    beaber.authorization(req, res, update);
 };
 
-exports.delete = function (req, res) {
+
+
+function _delete(req, res, user){
     const id = req.params.user_id;
 
     if (! common.checkDefinedParameters([id],"delete user")){
         return common.handleError(res,{code:common.ERROR_PARAMETER_MISSING,message:"Breach of preconditios (missing parameters)"},HttpStatus.NOT_ACCEPTABLE);
+    }
+
+    if (user.user_id !== id) {
+        return common.handleError(res,{message:"Error de autorización, no puede eliminar otro usuario"},HttpStatus.UNAUTHORIZED);
     }
 
     User.deleteById(id)
@@ -125,4 +140,8 @@ exports.delete = function (req, res) {
             logger.error("Error on delete user " + err);
             res.status(HttpStatus.INTERNAL_SERVER_ERROR).json("Error al eliminar el usuario");
         });
+}
+
+exports.delete = function (req, res) {
+    beaber.authorization(req, res, _delete);
 };
