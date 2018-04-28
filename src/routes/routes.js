@@ -5,14 +5,8 @@ const dishRoutes = require('./dish.js');
 const fileRoutes = require('./file.js');
 const foodTypesRoutes = require('./foodType.js');
 const userRoutes = require('./user.js');
-const beaber = require('../models/bearerAuthorization.js');
-
 
 exports.assignRoutes = function (app) {
-    //test athorizarion
-    //app.get('/api/testAuth', beaber.authorization(req, res, function(req, res, user) {
-    //    return res.status(200).json(user);
-    //}));
 
     loginRoutes.assignRoutes(app);
 
