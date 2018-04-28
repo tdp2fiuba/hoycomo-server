@@ -30,14 +30,6 @@ const userSchema = new Schema({
 userSchema.plugin(AutoIncrement, {inc_field: 'user_id'});
 userSchema.plugin(mongoose_delete,{ deletedAt : true, overrideMethods: true });
 
-userSchema.methods.validPassword = function(candidatePassword, cb) {
-    return this.password == candidatePassword;
-    //bcrypt.compare(candidatePassword, this.password, function(err, isMatch) {
-    //    if (err) return cb(err);
-    //    cb(null, isMatch);
-    //});
-};
-
 const User = mongoose.model('User',userSchema);
 
 exports.User = User;
@@ -93,4 +85,18 @@ exports.delete = function(user_id) {
 
 exports.forceDelete = function (user_id) {
     return User.findOneAndRemove({ user_id: user_id});
+};
+
+exports.getUsers = function(data) {
+    return User.find()
+        .skip(data.page*data.count)
+        .limit(parseInt(data.count))
+        .sort({register_timestamp: 'asc'})
+        .then(users => {
+            return Promise.resolve(users);
+        })
+        .catch(err => {
+            console.log(err);
+            return Promise.reject("Error al realizar la búsqueda.");
+        })
 };

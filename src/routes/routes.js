@@ -4,7 +4,9 @@ const utilsRoutes = require('./utils.js');
 const dishRoutes = require('./dish.js');
 const fileRoutes = require('./file.js');
 const foodTypesRoutes = require('./foodType.js');
+const userRoutes = require('./user.js');
 const beaber = require('../models/bearerAuthorization.js');
+
 
 exports.assignRoutes = function (app) {
     //test athorizarion
@@ -23,4 +25,6 @@ exports.assignRoutes = function (app) {
     fileRoutes.assignRoutes(app);
 
     foodTypesRoutes.assignRoutes(app);
+
+    userRoutes.assignRoutes(app);
 };
