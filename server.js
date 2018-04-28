@@ -5,7 +5,6 @@ const log4js = require('log4js');
 const cors = require('cors');
 const passport = require('passport');
 const cookieParser = require('cookie-parser');
-const session = require('express-session');
 require('./src/models/login.js')(passport);
 const beaber = require('./src/models/bearerAuthorization.js');
 beaber.configPassport(passport);
@@ -27,12 +26,6 @@ db_tools.DBConnectMongoose()
         app.use(bodyparser.urlencoded({extended: true}));
         app.use(bodyparser.json({limit: '10mb'}));
         app.use(cookieParser());
-        app.use(session({
-            secret: config.session_secret_key,
-            resave: false,
-            saveUninitialized: true,
-            cookie: { secure: true }
-        }));
         app.use(passport.initialize());
         app.use(passport.session());
 

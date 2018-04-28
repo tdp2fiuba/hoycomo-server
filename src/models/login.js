@@ -27,7 +27,7 @@ module.exports = function(passport) {
             if(err) throw(err);
             if(!err && user!= null) return done(null, user);
 
-            var user = new User({
+            user = new User({
                 facebook_id: profile.id,
                 first_name: profile.name.givenName,
                 last_name: profile.name.familyName,
@@ -38,7 +38,11 @@ module.exports = function(passport) {
                 if(err) throw err;
                 done(null, user);
             });
-        });
+        })
+        .catch( err => {
+            console.log("Error al loguear o crear usuario de facebook: ", err);
+            return done(err);
+        })
     }));
 
     //Local

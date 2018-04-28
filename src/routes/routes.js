@@ -4,21 +4,13 @@ const utilsRoutes = require('./utils.js');
 const dishRoutes = require('./dish.js');
 const fileRoutes = require('./file.js');
 const foodTypesRoutes = require('./foodType.js');
-const passport = require('passport');
+const beaber = require('../models/bearerAuthorization.js');
 
 exports.assignRoutes = function (app) {
     //test athorizarion
-    app.get('/api/testAuth', function(req, res, next) {
-        passport.authenticate('bearer', function(err, user, info) {
-            if (err) return res.status(500).json({ status: 'error', code: 'internal server error' });
-            if (user) {
-                req.user = user;
-                return res.status(200).json(req.user);
-            } else {
-                return res.status(401).json({ status: 'error', code: 'unauthorized' });
-            }
-        })(req, res, next);
-    });
+    //app.get('/api/testAuth', beaber.authorization(req, res, function(req, res, user) {
+    //    return res.status(200).json(user);
+    //}));
 
     loginRoutes.assignRoutes(app);
 
