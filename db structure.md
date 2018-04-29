@@ -7,14 +7,13 @@
 ```
 {
     first_name:    { type: String },
-    last_name:     { type: Number },
-    description : { type: String },
-    login : { type: String },
-    password : { type: String },
+    last_name:     { type: String },
+    facebook_id:   { type: String },
+    firebase_token:   { type: String },
     register_timestamp : { type: Date, default: Date.now },
     last_edit_timestamp : { type: Date, default: Date.now },
     email : { type: String },
-    date_of_birth : { type: Date, default: Date.now },
+    date_of_birth : { type: String },
     avatar: {type: String},
     address: {
         name : {type : String},
