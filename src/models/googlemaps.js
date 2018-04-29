@@ -15,8 +15,10 @@ exports.processAddress = function(address_name){
 		//Fix error google en PaseoColon 850
 
 		if (result.address_components[4].short_name !== "CABA"){
-			//por el momento solo se soportan direcciones en CABA
-            throw "Por el momento sólo se aceptan direcciones dentro de CABA.";
+			if (!result.address_components[3].short_name.match(/^Comuna\s([0-9]+)$/)) {
+                //por el momento solo se soportan direcciones en CABA
+                throw "Por el momento sólo se aceptan direcciones dentro de CABA.";
+            }
 		}
 
 		const address = {
