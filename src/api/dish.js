@@ -18,7 +18,13 @@ function dishToFront(dish) {
         name: dish.name,
         price: dish.price,
         discount: dish.discount || 0,
-        pictures: dish.pictures
+        description: dish.description,
+        pictures: dish.pictures,
+        garnishes: dish.garnishes,
+        diabetic: dish.diabetic,
+        vegan: dish.vegan,
+        vegetarian: dish.vegetarian,
+        celiac: dish.celiac
     }
 }
 
@@ -40,6 +46,16 @@ exports.create = function (req, res) {
     if (req.body.discount){
         dishData.discount = req.body.discount;
     }
+    if (req.body.description) {
+        dishData.description = req.body.description;
+    }
+    if (req.body.garnishes && Array.isArray(req.body.garnishes)) {
+        dishData.garnishes = req.body.garnishes;
+    }
+    dishData.diabetic = req.body.diabetic || false;
+    dishData.vegan = req.body.vegan || false;
+    dishData.vegetarian = req.body.vegetarian || false;
+    dishData.celiac = req.body.celiac || false;
 
     Store.getStoreByID(store_id)
     .then(store => {
