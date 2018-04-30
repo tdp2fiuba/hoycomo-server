@@ -27,3 +27,38 @@ exports.DBConnectMongoose = function() {
             });
     });
 };
+
+exports.buildFindStoreQuery = function (filters) {
+    var query = [];
+    if (filters) {
+        // Para poder filtrar por distancia, se necesita una propiedad que sea un array de dos Numbers,
+        // con formato [ long, lat ] de la ubicación que se quiere usar
+        if (filters.distance) {
+            var addFields = { 
+                $addFields: {
+                    loc: ["$address.lon", "$address.lat"]
+                } 
+            };
+            query.push(addFields);
+        }
+        var match = { $match: {} };
+
+        // Por cada filtro
+        for (var filter in filters) {
+            switch (filter) {
+                case "distance":
+                    match.$match.loc = {
+                        $geoWithin: {
+                            $centerSphere: [
+                                [filters.distance.lon, filters.distance.lat],
+                                filters.distance.distance/6378.1
+                            ]
+                        }
+                    };
+                    break;
+            }
+        }
+        query.push(match);
+    }
+    return query;
+}

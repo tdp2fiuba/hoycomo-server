@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const AutoIncrement = require('mongoose-sequence')(mongoose);
 const mongoose_delete = require('mongoose-delete');
 const foodTypesDB = require('./foodType');
+const dbTools = require('../tools/db_tools');
 
 Schema   = mongoose.Schema;	
 
@@ -94,9 +95,10 @@ exports.getStoreById = function(store_id) {
     })
 };
 
+
 exports.getStores = function(data) {
     return new Promise(function(resolve, reject) {
-        Store.find()
+        Store.aggregate(dbTools.buildFindStoreQuery(data.filters))
             .skip(data.page*data.count)
             .limit(parseInt(data.count))
             .sort({register_timestamp: 'asc'})

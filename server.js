@@ -19,7 +19,6 @@ global.__basedir = __dirname;
 const app = express();
 db_tools.DBConnectMongoose()
     .then(() => {
-
         const routes = require('./src/routes/routes.js');
 
         app.use(cors());
