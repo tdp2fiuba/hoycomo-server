@@ -118,3 +118,28 @@
 - key:
 	`order_id : string`
 - value:
+```
+```
+{
+    store_id: {type: Number},
+    user_id: { type: Number },
+    price : { type: Number },
+    discount : { type: Number },
+    description: { type: String},
+    dishes_id: [{ type: String }],
+    register_timestamp : { type: Date, default: Date.now },
+    state: [ {
+        state: {
+            type: String,
+            enum: [STATE_TAKEN, STATE_PREPARATION, STATE_DISPATCHED, STATE_DELIVERED, STATE_CANCELLED],
+            default: STATE_TAKEN
+        },
+        timestamp: {type: Date, default: Date.now}
+    }],
+    address: {
+        name : {type : String},
+        latitude : {type : Number},
+        longitude : {type : Number}
+    }
+}
+```

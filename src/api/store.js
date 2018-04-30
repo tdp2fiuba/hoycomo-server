@@ -12,62 +12,6 @@ exports.config = function(config){
 	common.config(config);
 };
 
-function storeToFront(store) {
-	//mock
-	const minMock = Math.floor((Math.random() * 20) + 30);
-	const maxMock = minMock + Math.floor((Math.random() * 40) + 1);
-	const mockAvailability = {
-        monday: {
-            start_time: "18:30:00",
-            end_time: "00:30:00"
-        },
-        tuesday: {
-            start_time: "18:30:00",
-            end_time: "00:30:00"
-        },
-        wednesday: {
-            start_time: "18:30:00",
-            end_time: "00:30:00"
-        },
-        thursday: {
-            start_time: "18:30:00",
-            end_time: "01:30:00"
-        },
-        friday: {
-            start_time: "18:30:00",
-            end_time: "02:00:00"
-        },
-        saturday: {
-            start_time: "18:30:00",
-            end_time: "03:00:00"
-        },
-        sunday: {
-            start_time: "18:30:00",
-            end_time: "01:30:00"
-        }
-    };
-
-	return {
-        id: store.store_id,
-        name: store.name,
-        business_name: store.business_name,
-        address: store.address,
-		email: store.email,
-		//mock
-		food_types: store.foodTypes,
-		avatar: store.avatar ? store.avatar : common.apiBaseURL() + '/images' + '/avatar_default.jpg',
-		delay_time: {
-        	min: minMock,
-			max: maxMock
-		},
-        availability: store.availability ? store.availability : mockAvailability
-    }
-
-
-}
-
-exports.storeToFront = storeToFront;
-
 exports.create = function (req, res) {
 	const name = req.body.name;
 	const business_name = req.body.business_name;
@@ -139,7 +83,7 @@ exports.search = function (req, res) {
 	
  	Store.getStores({page: page,count: count})
         .then(stores => {
-        	res.status(HttpStatus.OK).json(stores.map(storeToFront));
+        	res.status(HttpStatus.OK).json(stores.map(Store.storeToFront));
         })
         .catch(err => {
             logger.error("Error on search stores " + err);
@@ -156,7 +100,7 @@ exports.read = function (req, res) {
 
 	Store.getStoreByID(id)
         .then(store => {
-            res.status(HttpStatus.OK).json(storeToFront(store));
+            res.status(HttpStatus.OK).json(Store.storeToFront(store));
         })
         .catch(err => {
             logger.error("Error on read store " + err);
@@ -212,7 +156,7 @@ exports.update = function (req, res) {
     }).then( data_update => {
     	Store.updateStore(id,data_update)
 		.then(store => {
-			res.status(HttpStatus.OK).json(storeToFront(store));
+			res.status(HttpStatus.OK).json(Store.storeToFront(store));
 		})
 		.catch(err => {
 			logger.error("Error on update store " + err);

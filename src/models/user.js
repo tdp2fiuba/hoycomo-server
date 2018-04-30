@@ -1,5 +1,19 @@
 const userDB = require('../db/user.js');
 
+function userToFront(user) {
+
+    return {
+        id: user.user_id,
+        name: user.name,
+        last_name: user.last_name,
+        address: user.address,
+        avatar: user.avatar
+        //email: user.email,
+    }
+}
+
+exports.userToFront = userToFront;
+
 exports.findUserByID = function(user_id) {
     return userDB.getUserById(user_id);
 };

@@ -1,5 +1,61 @@
 const storeDB = require('../db/store.js');
 
+function storeToFront(store) {
+    //mock
+    const minMock = Math.floor((Math.random() * 20) + 30);
+    const maxMock = minMock + Math.floor((Math.random() * 40) + 1);
+    const mockAvailability = {
+        monday: {
+            start_time: "18:30:00",
+            end_time: "00:30:00"
+        },
+        tuesday: {
+            start_time: "18:30:00",
+            end_time: "00:30:00"
+        },
+        wednesday: {
+            start_time: "18:30:00",
+            end_time: "00:30:00"
+        },
+        thursday: {
+            start_time: "18:30:00",
+            end_time: "01:30:00"
+        },
+        friday: {
+            start_time: "18:30:00",
+            end_time: "02:00:00"
+        },
+        saturday: {
+            start_time: "18:30:00",
+            end_time: "03:00:00"
+        },
+        sunday: {
+            start_time: "18:30:00",
+            end_time: "01:30:00"
+        }
+    };
+
+    return {
+        id: store.store_id,
+        name: store.name,
+        business_name: store.business_name,
+        address: store.address,
+        email: store.email,
+        //mock
+        food_types: store.foodTypes,
+        avatar: store.avatar ? store.avatar : common.apiBaseURL() + '/images' + '/avatar_default.jpg',
+        delay_time: {
+            min: minMock,
+            max: maxMock
+        },
+        availability: store.availability ? store.availability : mockAvailability
+    }
+
+
+}
+
+exports.storeToFront = storeToFront;
+
 exports.createStore = function(store_data) {
     return new Promise(function(resolve, reject) {
         if (!store_data.name ||

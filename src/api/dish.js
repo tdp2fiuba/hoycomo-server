@@ -10,24 +10,6 @@ exports.config = function(config){
     common.config(config);
 };
 
-function dishToFront(dish) {
-    //mock
-    return {
-        id: dish.dish_id,
-        store_id: dish.store_id,
-        name: dish.name,
-        price: dish.price,
-        discount: dish.discount || 0,
-        description: dish.description,
-        pictures: dish.pictures,
-        garnishes: dish.garnishes,
-        diabetic: dish.diabetic,
-        vegan: dish.vegan,
-        vegetarian: dish.vegetarian,
-        celiac: dish.celiac
-    }
-}
-
 exports.create = function (req, res) {
     const name = req.body.name;
     const price = req.body.price;
@@ -96,7 +78,7 @@ exports.create = function (req, res) {
         Dish.createDish(dishData)
         .then(dish => {
             logger.info("Dish created:" + dish);
-            res.status(HttpStatus.CREATED).json(dishToFront(dish));
+            res.status(HttpStatus.CREATED).json(Dish.dishToFront(dish));
         })
         .catch(err => {
             logger.error("Error on create dish " + err);
@@ -117,7 +99,7 @@ exports.searchByStore = function (req, res){
 
     Dish.getDishsByStore({page: page,count: count,store_id: store_id})
         .then(dishes => {
-            res.status(HttpStatus.OK).json(dishes.map(dishToFront));
+            res.status(HttpStatus.OK).json(dishes.map(Dish.dishToFront));
         })
         .catch(err => {
             logger.error("Error on search dish " + err);
@@ -131,7 +113,7 @@ exports.searchAll = function (req, res){
 
     Dish.getDishs({page: page,count: count})
         .then(dishes => {
-            res.status(HttpStatus.OK).json(dishes.map(dishToFront));
+            res.status(HttpStatus.OK).json(dishes.map(Dish.dishToFront));
         })
         .catch(err => {
             logger.error("Error on search dish " + err);
@@ -149,7 +131,7 @@ exports.update = function (req, res) {
 
     Dish.updateDish(id,data)
         .then((dish) => {
-            res.status(HttpStatus.OK).json(dishToFront(dish));
+            res.status(HttpStatus.OK).json(Dish.dishToFront(dish));
         })
         .catch(err => {
             logger.error("Error on update dish " + err);

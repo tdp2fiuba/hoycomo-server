@@ -5,6 +5,7 @@ const dishRoutes = require('./dish.js');
 const fileRoutes = require('./file.js');
 const foodTypesRoutes = require('./foodType.js');
 const userRoutes = require('./user.js');
+const orderRoutes = require('./order.js');
 
 exports.assignRoutes = function (app) {
 
@@ -21,4 +22,6 @@ exports.assignRoutes = function (app) {
     foodTypesRoutes.assignRoutes(app);
 
     userRoutes.assignRoutes(app);
+
+    orderRoutes.assignRoutes(app);
 };

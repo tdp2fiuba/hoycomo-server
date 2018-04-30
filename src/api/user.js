@@ -11,27 +11,13 @@ exports.config = function(config){
     common.config(config);
 };
 
-function userToFront(user) {
-
-    return {
-        id: user.user_id,
-        name: user.name,
-        last_name: user.last_name,
-        address: user.address,
-        avatar: user.avatar
-        //email: user.email,
-    }
-}
-
-exports.userToFront = userToFront;
-
 exports.search = function (req, res) {
     const page = req.query.page || common.DEFAULT_PAGE;
     const count = req.query.count || common.DEFAULT_SIZE;
 
     User.getUsers({page: page,count: count})
         .then(users => {
-            res.status(HttpStatus.OK).json(users.map(userToFront));
+            res.status(HttpStatus.OK).json(users.map(User.userToFront));
         })
         .catch(err => {
             logger.error("Error on search users " + err);
@@ -48,7 +34,7 @@ exports.read = function (req, res) {
 
     User.getUserByID(id)
         .then(user => {
-            res.status(HttpStatus.OK).json(userToFront(user));
+            res.status(HttpStatus.OK).json(User.userToFront(user));
         })
         .catch(err => {
             logger.error("Error on read user " + err);
@@ -106,7 +92,7 @@ function update(req,res,user){
         }).then( data_update => {
         User.updateUser(id,data_update)
             .then(user => {
-                res.status(HttpStatus.OK).json(userToFront(user));
+                res.status(HttpStatus.OK).json(User.userToFront(user));
             })
             .catch(err => {
                 logger.error("Error on update user " + err);

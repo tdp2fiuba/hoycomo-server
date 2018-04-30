@@ -1,5 +1,24 @@
 const dishDB = require('../db/dish.js');
 
+function dishToFront(dish) {
+    return {
+        id: dish.dish_id,
+        store_id: dish.store_id,
+        name: dish.name,
+        price: dish.price,
+        discount: dish.discount || 0,
+        description: dish.description,
+        pictures: dish.pictures,
+        garnishes: dish.garnishes,
+        diabetic: dish.diabetic,
+        vegan: dish.vegan,
+        vegetarian: dish.vegetarian,
+        celiac: dish.celiac
+    }
+}
+
+exports.dishToFront = dishToFront;
+
 exports.createDish = function(dish_data) {
     return new Promise(function(resolve, reject) {
         if (!dish_data.store_id ||
@@ -54,6 +73,15 @@ exports.getDishByID = function(dish_id) {
             })
     });
 };
+
+exports.getDishByIDs = function(dish_ids) {
+    if (!dish_ids || dish_ids.length <= 0) {
+        return Promise.reject('Missing Store ID');
+    }
+
+    return dishDB.getDishByIds(dish_ids);
+};
+
 
 exports.getDishsByStore = function(data) {
     return new Promise(function(resolve, reject) {
