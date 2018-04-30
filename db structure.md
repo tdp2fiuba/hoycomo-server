@@ -101,7 +101,13 @@
     name: { type: String },
     price : { type: Number },
     discount : { type: Number },
-    pictures: [{ type: String }],
+    description : { type: String },
+    pictures : [{ type: String }],
+    garnishes : [{ type: String }],
+    diabetic : { type: Boolean },
+    vegan : { type: Boolean },
+    vegetarian : { type: Boolean },
+    celiac : { type: Boolean },
     register_timestamp : { type: Date, default: Date.now },
     last_edit_timestamp : { type: Date, default: Date.now }
 }
