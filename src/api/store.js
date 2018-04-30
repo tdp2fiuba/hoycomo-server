@@ -136,8 +136,11 @@ exports.create = function (req, res) {
 exports.search = function (req, res) {
 	const page = req.query.page || common.DEFAULT_PAGE;
     const count = req.query.count || common.DEFAULT_SIZE;
-	
- 	Store.getStores({page: page,count: count})
+	let parameters = { page: page,count: count };
+	if (req.query.filters) {
+		parameters.filters = JSON.parse(req.query.filters);
+	}
+ 	Store.getStores(parameters)
         .then(stores => {
         	res.status(HttpStatus.OK).json(stores.map(storeToFront));
         })
