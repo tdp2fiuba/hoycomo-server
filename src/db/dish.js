@@ -12,10 +12,10 @@ const dishSchema = new Schema({
     description: { type: String },
     pictures: [{ type: String }],
     garnishes: [{ type: String }],
-    diabetic: { type: Boolean },
-    vegan: { type: Boolean },
-    vegetarian: { type: Boolean },
-    celiac: { type: Boolean },
+    diabetic: { type: Boolean, default: false },
+    vegan: { type: Boolean, default: false },
+    vegetarian: { type: Boolean, default: false },
+    celiac: { type: Boolean, default: false },
     register_timestamp : { type: Date, default: Date.now },
     last_edit_timestamp : { type: Date, default: Date.now }
 });
