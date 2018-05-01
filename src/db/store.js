@@ -98,6 +98,7 @@ exports.getStoreById = function(store_id) {
 
 exports.getStores = function(data) {
     return new Promise(function(resolve, reject) {
+        console.log("debug 8");
         Store.aggregate(dbTools.buildFindStoreQuery(data.filters))
             .skip(data.page*data.count)
             .limit(parseInt(data.count))

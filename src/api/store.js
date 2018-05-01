@@ -78,12 +78,17 @@ exports.create = function (req, res) {
 };
 
 exports.search = function (req, res) {
+	console.log("debug 1");
 	const page = req.query.page || common.DEFAULT_PAGE;
-    const count = req.query.count || common.DEFAULT_SIZE;
+	const count = req.query.count || common.DEFAULT_SIZE;
+    console.log("debug 2");
 	let parameters = { page: page,count: count };
+    console.log("debug 3");
 	if (req.query.filters) {
 		parameters.filters = JSON.parse(req.query.filters);
+        console.log("debug 4");
 	}
+    console.log("debug 5");
  	Store.getStores(parameters)
         .then(stores => {
         	res.status(HttpStatus.OK).json(stores.map(Store.storeToFront));
@@ -91,7 +96,7 @@ exports.search = function (req, res) {
         .catch(err => {
             logger.error("Error on search stores " + err);
             console.log("Error on search stores " + err);
-            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json("Error al buscar los comercios");
+            return common.handleError(res,{message:"Error al buscar los comercios: " + err},HttpStatus.INTERNAL_SERVER_ERROR);
 	});	
 };
 

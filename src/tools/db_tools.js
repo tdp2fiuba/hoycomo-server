@@ -29,6 +29,7 @@ exports.DBConnectMongoose = function() {
 };
 
 exports.buildFindStoreQuery = function (filters) {
+    console.log("debug 10");
     var query = [];
     if (filters) {
         // Para poder filtrar por distancia, se necesita una propiedad que sea un array de dos Numbers,
@@ -60,5 +61,6 @@ exports.buildFindStoreQuery = function (filters) {
         }
         query.push(match);
     }
+    console.log("debug 11");
     return query;
 }
