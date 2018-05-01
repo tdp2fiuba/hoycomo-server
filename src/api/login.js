@@ -52,7 +52,7 @@ exports.loginUser = function (req, res, next) {
             return common.handleError(res,{message:info.message},HttpStatus.UNAUTHORIZED);
         }
 
-        res.status(HttpStatus.OK).send({user_id: user.user_id,name: user.name, last_name: user.last_name, token: bearer.generateUserToken(user)});
+        res.status(HttpStatus.OK).send({user_id: user.user_id,name: user.first_name, last_name: user.last_name, token: bearer.generateUserToken(user)});
 
     })(req, res, next);
 };

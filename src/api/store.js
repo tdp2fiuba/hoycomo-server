@@ -90,6 +90,7 @@ exports.search = function (req, res) {
         })
         .catch(err => {
             logger.error("Error on search stores " + err);
+            console.log("Error on search stores " + err);
             res.status(HttpStatus.INTERNAL_SERVER_ERROR).json("Error al buscar los comercios");
 	});	
 };
