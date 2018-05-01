@@ -68,10 +68,11 @@ exports.createOrder = function(data) {
     return orderDB.saveOrder(data);
 };
 
-exports.updateStore = function(order_id,data) {
+exports.updateOrder = function(order_id,data) {
     if (!order_id || !data) {
         return Promise.reject('Missing parameters');
     }
+
     return orderDB.updateOrder(order_id,data);
 };
 
@@ -91,10 +92,23 @@ exports.getOrderByStoreId= function(id) {
     return orderDB.getOrderByStore(id);
 };
 
+exports.getOrderByUserId = function(id) {
+    if (!id) {
+        return Promise.reject('Missing Store ID');
+    }
+
+    return orderDB.getOrderByUser(id);
+};
+
 exports.getOrders = function() {
     return orderDB.getOrders();
 };
 
 exports.deleteById = function (id) {
     return orderDB.delete(id);
+};
+
+
+exports.validateState = function (state) {
+    return (orderDB.states.indexOf(state.toUpperCase()) > 0);
 };

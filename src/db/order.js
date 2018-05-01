@@ -40,6 +40,8 @@ const Order = mongoose.model('Order',orderSchema);
 
 exports.Order = Order;
 
+exports.states = [STATE_TAKEN, STATE_PREPARATION, STATE_DISPATCHED, STATE_DELIVERED, STATE_CANCELLED];
+
 exports.saveOrder = function(data) {
     const order = new Order(data);
     return order.save();
@@ -64,6 +66,11 @@ exports.getOrderById = function(order_id) {
 exports.getOrderByStore = function(store_id) {
     return Order.find({store_id: store_id})
             .sort({register_timestamp: 'asc'});
+};
+
+exports.getOrderByUser = function(user_id) {
+    return Order.find({user_id: user_id})
+        .sort({register_timestamp: 'asc'});
 };
 
 exports.getOrders = function() {

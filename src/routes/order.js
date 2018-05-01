@@ -11,17 +11,14 @@ exports.assignRoutes = function (app) {
     app.get(apiHostBase + '/order/:order_id',order.read);
 
     //Read order by user
-    app.get(apiHostBase + '/order/user/:user_id',order.readByUser);
+    app.get(apiHostBase + '/order/user/:user_id',order.searchByUser);
 
     //Read order by store
-    app.get(apiHostBase + '/order/store/:store_id',order.readByUser);
+    app.get(apiHostBase + '/order/store/:store_id',order.searchByStore);
 
     //Update order
     app.put(apiHostBase + '/order/:order_id', order.update);
 
-    //Delete order
-    app.delete(apiHostBase + '/order/:order_id',order.delete);
-
-    //Search orders
+    //Search orders for debug
     app.get(apiHostBase + '/orders',order.search);
 };
