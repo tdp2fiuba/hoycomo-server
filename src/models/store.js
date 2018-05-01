@@ -1,4 +1,5 @@
 const storeDB = require('../db/store.js');
+const common = require('../utils/common.js');
 
 function storeToFront(store) {
     //mock
@@ -119,12 +120,10 @@ exports.getStoreByID = function(store_id) {
 //get list of stores
 exports.getStores = function(data) {
   return new Promise(function(resolve, reject) {
-      console.log("debug 6");
       if (data.page === 'undefined' || (data.page < 0) || !data.count) {
             reject('Missing page or count in search store');
             return;
       }
-      console.log("debug 7");
       storeDB.getStores(data)
         .then(stores => {
             resolve(stores);
