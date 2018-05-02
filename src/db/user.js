@@ -24,8 +24,7 @@ const userSchema = new Schema({
           latitude : {type : Number},
           longitude : {type : Number}
         }
-    ],
-    orders : [ {order_id: {type : String} }]
+    ]
 });
 
 userSchema.plugin(AutoIncrement, {inc_field: 'user_id'});
