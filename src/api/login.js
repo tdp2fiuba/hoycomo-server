@@ -2,6 +2,7 @@ const loginDB = require('../db/loginDB');
 const HttpStatus = require('http-status-codes');
 const common = require('../utils/common.js');
 const User = require('../models/user.js');
+const Store = require('../models/store.js');
 const passport = require('passport');
 const bearer = require('../models/bearerAuthorization.js');
 let logger;
@@ -39,7 +40,7 @@ exports.loginStore = function (req, res, next) {
             return common.handleError(res,{message:info.message},HttpStatus.UNAUTHORIZED);
         }
 
-        res.status(HttpStatus.OK).send({store_id: user.store_id,name: user.name, token: bearer.generateStoreToken(user)});
+        res.status(HttpStatus.OK).send({store: Store.storeToFront(user), token: bearer.generateStoreToken(user)});
 
     })(req, res, next);
 };
