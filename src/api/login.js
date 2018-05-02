@@ -60,9 +60,7 @@ exports.loginUser = function (req, res, next) {
             }
         })
         .then(user => {
-            const data = User.userToFront(user);
-            data.token = bearer.generateUserToken(user);
-            res.status(HttpStatus.OK).send(data);//{user: User.userToFront(user), token: bearer.generateUserToken(user)});
+            res.status(HttpStatus.OK).send({user: User.userToFront(user), token: bearer.generateUserToken(user)});
         })
         .catch(err => {
             console.log("Err on update firebase id " + err);
