@@ -52,9 +52,22 @@ exports.loginUser = function (req, res, next) {
         if (!user) {
             return common.handleError(res,{message:info.message},HttpStatus.UNAUTHORIZED);
         }
-
-        res.status(HttpStatus.OK).send({user: User.userToFront(user), token: bearer.generateUserToken(user)});
-
+        new Promise((resolve, reject) => {
+            if (req.body.firebase_id) {
+                return User.updateUser({firebase_id: req.body.firebase_id});
+            } else {
+                resolve(user);
+            }
+        })
+        .then(user => {
+            const data = User.userToFront(user);
+            data.token = bearer.generateUserToken(user);
+            res.status(HttpStatus.OK).send(data);//{user: User.userToFront(user), token: bearer.generateUserToken(user)});
+        })
+        .catch(err => {
+            console.log("Err on update firebase id " + err);
+            return common.handleError(res,{message:"Error al asignar el id de firebase"},HttpStatus.INTERNAL_SERVER_ERROR);
+        });
     })(req, res, next);
 };
 

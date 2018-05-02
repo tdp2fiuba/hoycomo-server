@@ -33,7 +33,6 @@ module.exports = function(passport) {
                 last_name: profile.name.familyName,
                 email: profile.emails[0].value,
                 avatar: profile.photos[0].value
-                //firebase_token:
             });
             user.save(function(err) {
                 if(err) throw err;
