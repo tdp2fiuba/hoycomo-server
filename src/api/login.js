@@ -55,7 +55,18 @@ exports.loginUser = function (req, res, next) {
         }
         new Promise((resolve, reject) => {
             if (req.body.firebase_id) {
-                return User.updateUser({firebase_id: req.body.firebase_id});
+                if (user.firebase_id !== req.body.firebase_id){
+                    User.updateUser(user.user_id,{firebase_id: req.body.firebase_id})
+                    .then(user => {
+                        resolve(user);
+                    })
+                    .catch(err => {
+                        console.log("Err on update firebase id " + err);
+                        resolve(user);
+                    });
+                } else {
+                    resolve(user);
+                }
             } else {
                 resolve(user);
             }
@@ -73,4 +84,4 @@ exports.loginUser = function (req, res, next) {
 exports.logout = function(req, res) {
     req.logout();
     res.status(HttpStatus.OK).json({success: true});
-}
+};

@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "hoycomo-1522801207352",
+  "private_key_id": "d4e65e49b850dd879d62a3955e35c4f31e0e351c",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCpyiFInSBnw25I\naRIm4ccw8kMfzx+vC8QwEepjFJyjh+X+gmv7Qc9Qsy1ib8Dy1S1VAm6yfvCA7F6o\nU+0WniUvP73U0Clvsg9if5U8sQsaI/9dzL8Loe3vq/j+F/iCY/N3mQUxopHjlhfw\ngAoCdn6VDvhG/gRU7A7xx9NdAL5Jks2ro4mmTdNfsuNPJvXWlaenD5qL5PEzLe9U\nDt62fZalVfpRFVPhrvK+20oIIB90yEa2A0+OXEBFhf+WmtybHKNQw/b8Z4QZrbVd\nyhj07l2Zut/CkKUmUvObE9xuW4Nm1qSuear/YFotpAcgQ/gHaUupcXPkcScTCy4+\nQ1sjW6+nAgMBAAECggEAHrs9Jv15ng5babPK20rGWO+ggqNkorRIgELd360dZOP2\nFwjYLpQMyBiGQGjlzY4UNGzKSHh9Y3hk8aavJQbeyByLaXd76IGcE0HwaxnIXqTh\nVcL3WU2n2VeRK7x++GrK6HzD2eYI7d5+2sLyDNwRsT0SZxcXBZ/sXIrEkPLPflVO\nbuMbo3xB2FU7J77SPLzPiASsFto96QKUNHcAV2tTqjaZOQPFga1BGJBqtNO54kuM\ntiksJiqAvn0EdQq/rie2lsGqfNzNjPLIedPdgFSEwX6GekhLad3kcuoV6j1vXMnC\nrTgKMTy/a6Q02evImUYhTMR4fKirC9ZFHEg2dZASMQKBgQDW87YoSVo2UKD799TW\nPmWemSo3PMQYkWDOUveRTuLZwgnUfnkAwEqtPvOAtPjDuNb4A825dBzmtnLb2kIO\nI9MRRCI+TseoOvzsnUoaddYibLsLCGXXNJLP/xStevfV25RcFM97ix2/ou3VZGFZ\nG0/b0a/0q90aIMsJ0O1N1i6uCwKBgQDKNpPZTOWvsUvtBH3OBp6G5lqz552+XKS+\nySs57dlB+C7EERbadV7cA1juuGen6p00PlGtxSi2d69/twMGpQ2k5sWxSTMJMkpI\nzbNUV/ICKDlIFaf73cfx3j2USmB+D1BHrDWdXOOAVV7HSoZ/6ItU7s9TQbQ2oYHb\n8cZjrPFyVQKBgQCxMOWQACelboHGM1333ifWvVvXfPgJaI3shugdmHHYH+QKjtcg\nj2L/vUztZEFM1ioe+MO1hMnuRagZI6ogDdgH+6pewoJDY5zrUB2uAkUqy4bEaX/K\nD0SWwSdCeoOifwelgGIo7VzwhFaZ+c1lruX9xrTNdH8m8rFsvhVgfJauUQKBgCZh\nW4iYDtRdC3MuMg6jtP0Xxcl1wbv6644GsrypB159E6tFLxhBxMJvpDaTK6F0Z2ge\nF/SqgkK3zsin3NwrAb71yjoPEa/CKtVMrafplVaReeXTrnGgs62VqAx4XX4vu+YO\nqpJ2qfuWuImM/KBUa/Wv6gv8YY8o8nPjnOsYTS+NAoGAXrD6TA3O1VgjuEmyoFfw\na7n74JGKO/0oI3yQOixPtSCKLD8Bk6mUXCYDNP0qLb2HlR8bH8WVIMd5tLfAqnLW\nofJGs2WXNad6qH8yxYbtZUFDwEppIR17yAxaRve15E5RiTVb+GjbGpPOrwzAFcxS\neVXe69wyGUmp2kO6zFvxh/4=\n-----END PRIVATE KEY-----\n",
+  "client_email": "firebase-adminsdk-zwr1q@hoycomo-1522801207352.iam.gserviceaccount.com",
+  "client_id": "103715824416523520435",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://accounts.google.com/o/oauth2/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-zwr1q%40hoycomo-1522801207352.iam.gserviceaccount.com"
+}
