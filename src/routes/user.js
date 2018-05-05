@@ -4,15 +4,15 @@ const apiHostBase = require('../config/config.json').api_host_base;
 exports.assignRoutes = function (app) {
     user.config({logger: app.get('logger')});
 
-    //Read store
+    //Read user
     app.get(apiHostBase + '/user/:user_id',user.read);
 
-    //Update store
+    //Update user
     app.put(apiHostBase + '/user/:user_id', user.update);
 
-    //Delete store
+    //Delete user
     app.delete(apiHostBase + '/user/:user_id',user.delete);
 
-    //Search stores
+    //Search users
     app.get(apiHostBase + '/user',user.search);
 };

@@ -48,7 +48,7 @@ exports.saveUser = function(user_data) {
 };
 
 exports.updateUser = function(user_id,user_data) {
-    user_data.last_edit_timestamp = Date.now;
+    user_data.last_edit_timestamp = Date.now();
     return User.findOneAndUpdate({user_id : user_id},user_data,{new: true});
 };
 

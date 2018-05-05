@@ -17,7 +17,7 @@ exports.search = function (req, res) {
 
     User.getUsers({page: page,count: count})
         .then(users => {
-            res.status(HttpStatus.OK).json(users.map(User.userToFront));
+            res.status(HttpStatus.OK).json(users);//.map(User.userToFront));
         })
         .catch(err => {
             logger.error("Error on search users " + err);
@@ -129,5 +129,14 @@ function _delete(req, res, user){
 }
 
 exports.delete = function (req, res) {
-    beaber.authorization(req, res, _delete);
+    //beaber.authorization(req, res, _delete);
+    const id = req.params.user_id;
+    User.deleteById(id)
+        .then(() => {
+            res.status(HttpStatus.OK).json("Usuario eliminado");
+        })
+        .catch(err => {
+            logger.error("Error on delete user " + err);
+            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json("Error al eliminar el usuario");
+        });
 };

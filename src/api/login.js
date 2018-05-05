@@ -54,9 +54,9 @@ exports.loginUser = function (req, res, next) {
             return common.handleError(res,{message:info.message},HttpStatus.UNAUTHORIZED);
         }
         new Promise((resolve, reject) => {
-            if (req.body.firebase_id) {
-                if (user.firebase_id !== req.body.firebase_id){
-                    User.updateUser(user.user_id,{firebase_id: req.body.firebase_id})
+            if (req.body.firebase_token) {
+                if (user.firebase_token !== req.body.firebase_token){
+                    User.updateUser(user.user_id,{firebase_token: req.body.firebase_token})
                     .then(user => {
                         resolve(user);
                     })

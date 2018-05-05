@@ -30,13 +30,10 @@ exports.getUserByID = function(user_id) {
 };
 
 exports.updateUser = function(user_id,user_data) {
-    return new Promise(function(resolve, reject) {
-        if (!user_id || !user_data) {
-            reject('Missing parameters');
-            return;
-        }
-        return userDB.updateUser(user_id,user_data);
-    });
+    if (!user_id || !user_data) {
+        return Promise.reject('Missing parameters');
+    }
+    return userDB.updateUser(user_id,user_data);
 };
 
 exports.deleteById = function (id) {
