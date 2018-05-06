@@ -1,9 +1,12 @@
 const HttpStatus = require('http-status-codes');
 const Order = require('../models/order.js');
 const Dish = require('../models/dish.js');
+const User = require('../models/user.js');
 const Store = require('../models/store.js');
 const common = require('../utils/common.js');
 const beaber = require('../models/bearerAuthorization.js');
+const firebase = require('../models/firebase.js');
+const mailing = require('../tools/mailing.js');
 let logger;
 
 exports.config = function(config){
@@ -21,17 +24,28 @@ function _create(req, res, user) {
     }
 
     const store_id = req.body.store_id;
-    const dishes_id = req.body.dishes_id;
+    const items = req.body.items;
     const address = req.body.address;
 
-    if (! common.checkDefinedParameters([user_id,dishes_id,store_id,address,address.name,address.longitude,address.latitude],"add dish")){
+    if (! common.checkDefinedParameters([user_id,items,store_id,address,address.name,address.longitude,address.latitude],"add order")){
         return common.handleError(res,{code:common.ERROR_PARAMETER_MISSING,message:"Parámetros inválidos o insuficientes"},HttpStatus.BAD_REQUEST);
     }
+    const dishes_id = [];
+    items.forEach(function (item) {
+       if (!item.id) {
+           console.log("error al agregar el pedido, falta el dish id en items",item);
+           return common.handleError(res,{code:common.ERROR_PARAMETER_MISSING,message:"Parámetros inválidos o insuficientes"},HttpStatus.BAD_REQUEST);
+       }
+       dishes_id.push(item.id);
+       if (!item.quantity || item.quantity < 1){
+           item.quantity = 1;
+       }
+    });
 
     const data = {
         user_id : user_id,
         store_id : store_id,
-        dishes_id: dishes_id,
+        items: items,
         description : req.body.description
     };
 
@@ -45,7 +59,7 @@ function _create(req, res, user) {
                 logger.error("Error on add order, store non exist. store_id: " + store_id);
                 return common.handleError(res,{code:common.ERROR_PARAMETER_MISSING,message:"Error al agregar un pedido, no existe el comercio"},HttpStatus.NOT_FOUND);
             }
-
+            data.store = store;
             return Dish.getDishByIDs(dishes_id)
             .then(dishes => {
                 if (!dishes || dishes.length < dishes_id.length ) {
@@ -68,7 +82,14 @@ function _create(req, res, user) {
             .then(order => {
                 logger.info("Order created:" + order);
                 //TODO: UPDATE ADDRESS AL USUARIO, si es la primera como la defautl si no en other_address
-                //Enviar email al comercio. Enviar notificaciones push
+
+                //Enviar email al comercio.
+                mailing.sendHTMLMail(data.store.email,"Nuevo pedido", "<p>Nuevo pedido:</p>");
+
+                //Enviar notificaciones push desp de 10 seg
+                //setTimeout(function () {
+                //    firebase.sendNotification(user.firebase_token,"Tu pedido se está preparando!", "");
+                //},10000);
 
                 res.status(HttpStatus.CREATED).json(Order.orderToFront(order));
             })
@@ -113,6 +134,7 @@ exports.read = function (req, res) {
     beaber.authorization(req, res, _read);
 };
 
+//Por el momento solo actualiza el estado
 function update(req,res,user){
     const id = req.params.order_id;
     const state = req.body.state.toUpperCase();
@@ -140,8 +162,31 @@ function update(req,res,user){
 
             Order.updateOrder(id,{state: state})
                 .then(order => {
-                    //TODO enviar push notifications al usuario
+                    User.getUserByID(order.user_id)
+                    .then(orderUser => {
+                        let title = "";
+                        let text = "";
+                        switch(state) {
+                            case 'PREPARATION':
+                                title = "Tu pedido se está preparando!";
+                                text = "";
+                                break;
+                            case 'DISPATCHED':
+                                title = "Tu pedido está en camino! 🛵";
+                                text = "";
+                                break;
+                            case 'DELIVERED':
+                                title = "Pedido entregado, gracias por confiar en nosotros";
+                                text = "";
+                                break;
+                            case 'CANCELLED':
+                                title = "Tu pedido fue cancelado por el comercio";
+                                text = "";
+                                break;
+                        }
 
+                        firebase.sendNotification(orderUser.firebase_token,title,text);
+                    });
                     res.status(HttpStatus.OK).json(Order.orderToFront(order));
                 })
                 .catch(err => {

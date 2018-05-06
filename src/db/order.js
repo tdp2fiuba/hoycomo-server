@@ -17,6 +17,14 @@ const orderSchema = new Schema({
     discount : { type: Number },
     description: { type: String},
     dishes_id: [{ type: String }],
+    items: [
+        {
+            id : { type: String },
+            garnish: { type: String },
+            quantity: { type: Number },
+            comments: { type: String }
+        }
+    ],
     register_timestamp : { type: Date, default: Date.now },
     state: [ {
         state: {

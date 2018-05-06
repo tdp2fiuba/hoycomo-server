@@ -17,7 +17,7 @@ exports.search = function (req, res) {
 
     User.getUsers({page: page,count: count})
         .then(users => {
-            res.status(HttpStatus.OK).json(users);//.map(User.userToFront));
+            res.status(HttpStatus.OK).json(users.map(User.userToFront));
         })
         .catch(err => {
             logger.error("Error on search users " + err);
