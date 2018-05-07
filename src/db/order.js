@@ -36,8 +36,8 @@ const orderSchema = new Schema({
     }],
     address: {
         name : {type : String},
-        latitude : {type : Number},
-        longitude : {type : Number}
+        lat : {type : Number},
+        lon : {type : Number}
     }
 });
 
@@ -51,6 +51,12 @@ exports.Order = Order;
 exports.states = [STATE_TAKEN, STATE_PREPARATION, STATE_DISPATCHED, STATE_DELIVERED, STATE_CANCELLED];
 
 exports.saveOrder = function(data) {
+    if (!data.states){
+        data.states = [{
+            state: STATE_TAKEN,
+            timestamp: Date.now()
+        }]
+    }
     const order = new Order(data);
     return order.save();
 };
@@ -60,11 +66,11 @@ exports.updateOrder = function(order_id,data) {
 };
 
 exports.updateOrderState = function(order_id,state){
-    const data = {state: {
+    const _state = {
             state: state,
             timestamp: Date.now()
-        }};
-    return Order.findOneAndUpdate({order_id : order_id},data,{new: true});
+        };
+    return Order.findOneAndUpdate({order_id : order_id},{ $push: { states: _state } },{new: true});
 };
 
 exports.getOrderById = function(order_id) {

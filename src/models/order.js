@@ -13,15 +13,21 @@ function stateToFront(states) {
 }
 
 function orderToFront(order) {
+
     const _order = {
         price : order.price,
-        discount : order.discount,
+        items: order.items,
+        discount : order.discount || 0,
+        states : order.states,
         description: order.description,
         register_timestamp : order.register_timestamp,
         address: order.address
     };
-
-    return Dish.getDishByIDs(order.dishes_id)
+    const dishes_id = [];
+    order.items.forEach(function (item) {
+        dishes_id.push(item.id);
+    });
+    return Dish.getDishByIDs(dishes_id)
     .then( dishes => {
         _order.dishes = dishes.map(Dish.dishToFront);
         return Promise.resolve(_order);
@@ -55,12 +61,12 @@ exports.orderToFront = orderToFront;
 exports.createOrder = function(data) {
     if (!data.store_id ||
         !data.user_id ||
-        !data.dishes_id ||
-        data.dishes_id.length <= 0 ||
+        !data.items ||
+        data.items.length <= 0 ||
         !data.address ||
         !data.address.name ||
-        !data.address.latitude ||
-        !data.address.longitude) {
+        !data.address.lat ||
+        !data.address.lon) {
 
         return Promise.reject('Missing fields');
     }
@@ -74,6 +80,14 @@ exports.updateOrder = function(order_id,data) {
     }
 
     return orderDB.updateOrder(order_id,data);
+};
+
+exports.updateOrderState = function(order_id,state) {
+    if (!order_id || !state) {
+        return Promise.reject('Missing parameters');
+    }
+
+    return orderDB.updateOrderState(order_id,state);
 };
 
 exports.getOrderById= function(id) {

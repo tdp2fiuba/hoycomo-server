@@ -62,7 +62,7 @@ exports.getDishById = function(dish_id) {
 };
 
 exports.getDishByIds = function(dish_ids) {
-    return Dish.findOne({dish_id : {$in: dish_ids}});
+    return Dish.find({dish_id : {$in: dish_ids}});
 };
 
 exports.getDishByStore = function(data) {

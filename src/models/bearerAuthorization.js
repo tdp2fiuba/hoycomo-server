@@ -60,6 +60,7 @@ exports.generateStoreToken= function(store) {
 exports.authorization = function(req, res, next) {
     passport.authenticate('bearer', function (err, user, info) {
         if (err) {
+            console.log("Error al autorizar: ",err);
             return common.handleError(res,{message:"Error, intente nuevamente más tarde"},HttpStatus.INTERNAL_SERVER_ERROR);
         }
         if (user) {

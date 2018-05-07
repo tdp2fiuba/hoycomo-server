@@ -27,7 +27,7 @@ function _create(req, res, user) {
     const items = req.body.items;
     const address = req.body.address;
 
-    if (! common.checkDefinedParameters([user_id,items,store_id,address,address.name,address.longitude,address.latitude],"add order")){
+    if (! common.checkDefinedParameters([user_id,items,store_id,address,address.name,address.lat,address.lon],"add order")){
         return common.handleError(res,{code:common.ERROR_PARAMETER_MISSING,message:"Parámetros inválidos o insuficientes"},HttpStatus.BAD_REQUEST);
     }
     const dishes_id = [];
@@ -46,6 +46,7 @@ function _create(req, res, user) {
         user_id : user_id,
         store_id : store_id,
         items: items,
+        address: address,
         description : req.body.description
     };
 
@@ -54,50 +55,65 @@ function _create(req, res, user) {
     }
 
     Store.getStoreByID(store_id)
-        .then(store => {
-            if (!store) {
-                logger.error("Error on add order, store non exist. store_id: " + store_id);
-                return common.handleError(res,{code:common.ERROR_PARAMETER_MISSING,message:"Error al agregar un pedido, no existe el comercio"},HttpStatus.NOT_FOUND);
-            }
-            data.store = store;
-            return Dish.getDishByIDs(dishes_id)
+    .then(store => {
+        if (!store) {
+            logger.error("Error on add order, store non exist. store_id: " + store_id);
+            return common.handleError(res, {
+                code: common.ERROR_PARAMETER_MISSING,
+                message: "Error al agregar un pedido, no existe el comercio"
+            }, HttpStatus.NOT_FOUND);
+        }
+        data.store = store;
+        return Promise.resolve(data);
+    })
+    .then(data => {
+        return Dish.getDishByIDs(dishes_id)
             .then(dishes => {
-                if (!dishes || dishes.length < dishes_id.length ) {
+                if (!dishes || dishes.length < dishes_id.length) {
                     const db_dishes_id = [];
                     dishes.forEach(id => {
                         db_dishes_id.push(id);
                     });
 
-                    const faltantes = dishes_id.filter(id => { db_dishes_id.indexOf( id ) < 0 });
+                    const faltantes = dishes_id.filter(id => {
+                        db_dishes_id.indexOf(id) < 0
+                    });
                     logger.error("Error on add order, dish non exist. dish_id: " + faltantes);
-                    return common.handleError(res,{code:common.ERROR_PARAMETER_MISSING,message:"Error al agregar un pedido, no existe el plato con id:" + faltantes},HttpStatus.NOT_FOUND);
+                    return common.handleError(res, {
+                        code: common.ERROR_PARAMETER_MISSING,
+                        message: "Error al agregar un pedido, no existe el plato con id:" + faltantes
+                    }, HttpStatus.NOT_FOUND);
                 }
                 else {
-                    Promise.resolve(data);
+                    return Promise.resolve(data);
                 }
-            });
-        })
-        .then(data => {
-            Order.createOrder(data)
-            .then(order => {
-                logger.info("Order created:" + order);
-                //TODO: UPDATE ADDRESS AL USUARIO, si es la primera como la defautl si no en other_address
-
-                //Enviar email al comercio.
-                mailing.sendHTMLMail(data.store.email,"Nuevo pedido", "<p>Nuevo pedido:</p>");
-
-                //Enviar notificaciones push desp de 10 seg
-                //setTimeout(function () {
-                //    firebase.sendNotification(user.firebase_token,"Tu pedido se está preparando!", "");
-                //},10000);
-
-                res.status(HttpStatus.CREATED).json(Order.orderToFront(order));
             })
+    })
+    .then(data => {
+        Order.createOrder(data)
+        .then(order => {
+            logger.info("Order created:" + order);
+            //TODO: UPDATE ADDRESS AL USUARIO, si es la primera como la defautl si no en other_address
+
+            //Enviar email al comercio.
+            mailing.sendHTMLMail(data.store.email,"Nuevo pedido", "<p>Nuevo pedido:</p>");
+
+            //Enviar notificaciones push desp de 10 seg
+            //setTimeout(function () {
+            //    firebase.sendNotification(user.firebase_token,"Tu pedido se está preparando!", "");
+            //},10000);
+
+            res.status(HttpStatus.CREATED).json(Order.orderToFront(order));
         })
         .catch(err => {
             logger.error("Error on create order " + err);
             return common.handleError(res,{code:common.ERROR_PARAMETER_MISSING,message:"Error al agregar el pedido, " + err},HttpStatus.INTERNAL_SERVER_ERROR);
-        });
+        })
+    })
+    .catch(err => {
+        logger.error("Error on create order " + err);
+        return common.handleError(res,{code:common.ERROR_PARAMETER_MISSING,message:"Error al agregar el pedido, " + err},HttpStatus.INTERNAL_SERVER_ERROR);
+    })
 
 }
 
@@ -160,7 +176,7 @@ function update(req,res,user){
                 return common.handleError(res,{message:"Estado inválido"},HttpStatus.NO_CONTENT);
             }
 
-            Order.updateOrder(id,{state: state})
+            Order.updateOrderState(id,state)
                 .then(order => {
                     User.getUserByID(order.user_id)
                     .then(orderUser => {
@@ -257,7 +273,7 @@ exports.searchByUser = function (req, res){
 exports.search = function (req, res) {
     Order.getOrders()
         .then(orders => {
-            res.status(HttpStatus.OK).json(orders);
+            res.status(HttpStatus.OK).json(orders);//.map(Order.orderToFront));
         })
         .catch(err => {
             logger.error("Error on search orders " + err);

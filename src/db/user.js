@@ -15,14 +15,14 @@ const userSchema = new Schema({
     avatar: {type: String},
     address: {
         name : {type : String},
-        latitude : {type : Number},
-        longitude : {type : Number}
+        lat : {type : Number},
+        lon : {type : Number}
     },
     other_address : [
         {
           name : {type : String},
-          latitude : {type : Number},
-          longitude : {type : Number}
+          lat : {type : Number},
+          lon : {type : Number}
         }
     ]
 });
