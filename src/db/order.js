@@ -16,7 +16,6 @@ const orderSchema = new Schema({
     price : { type: Number },
     discount : { type: Number },
     description: { type: String},
-    dishes_id: [{ type: String }],
     items: [
         {
             id : { type: String },
@@ -26,7 +25,7 @@ const orderSchema = new Schema({
         }
     ],
     register_timestamp : { type: Date, default: Date.now },
-    state: [ {
+    states: [ {
         state: {
             type: String,
             enum: [STATE_TAKEN, STATE_PREPARATION, STATE_DISPATCHED, STATE_DELIVERED, STATE_CANCELLED],
