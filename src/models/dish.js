@@ -82,7 +82,6 @@ exports.getDishByIDs = function(dish_ids) {
     return dishDB.getDishByIds(dish_ids);
 };
 
-
 exports.getDishsByStore = function(data) {
     return new Promise(function(resolve, reject) {
         if (data.page === 'undefined' || (data.page < 0) || !data.count || !data.store_id) {

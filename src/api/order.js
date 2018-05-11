@@ -207,7 +207,7 @@ function update(req,res,user){
                 })
                 .catch(err => {
                     logger.error("Error on update order " + err);
-                    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json("Error al actualizar el pedido");
+                    return common.handleError(res,{message:"Error al actualizar el pedido"},HttpStatus.INTERNAL_SERVER_ERROR);
                 });
 
         } else {
@@ -233,13 +233,16 @@ function _searchByStore(req, res, user){
         return common.handleError(res,{message:"Error de autorización"},HttpStatus.UNAUTHORIZED);
     }
 
-    Order.getOrderByStoreId({store_id: store_id})//{page: page,count: count,store_id: store_id})
+    Order.getOrderByStoreId(store_id)//{page: page,count: count,store_id: store_id})
     .then(orders => {
-        res.status(HttpStatus.OK).json(orders.map(Order.orderToFront));
+        const promises = orders.map(Order.orderToFront);
+        Promise.all(promises).then( orders => {
+            res.status(HttpStatus.OK).json(orders);
+        })
     })
     .catch(err => {
-        logger.error("Error on search order " + err);
-        res.status(HttpStatus.INTERNAL_SERVER_ERROR).json("Error al buscar los pedidos para el comercio :" + store_id);
+        console.log("Error on search order " + err);
+        return common.handleError(res,{message:"Error al buscar los pedidos para el comercio :" + store_id},HttpStatus.INTERNAL_SERVER_ERROR);
     });
 }
 
@@ -256,13 +259,16 @@ function _searchByUser(req, res, user){
         return common.handleError(res,{message:"Error de autorización"},HttpStatus.UNAUTHORIZED);
     }
 
-    Order.getOrderByUserId({user_id: user_id})//{page: page,count: count,user_id: user_id})
+    Order.getOrderByUserId(user_id)//{page: page,count: count,user_id: user_id})
         .then(orders => {
-            res.status(HttpStatus.OK).json(orders.map(Order.orderToFront));
+            const promises = orders.map(Order.orderToFront);
+            Promise.all(promises).then( orders => {
+                res.status(HttpStatus.OK).json(orders);
+            });
         })
         .catch(err => {
             logger.error("Error on search order " + err);
-            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json("Error al buscar los pedidos para el usuario :" + user_id);
+            return common.handleError(res,{message:"Error al buscar los pedidos para el usuario :" + user_id},HttpStatus.INTERNAL_SERVER_ERROR);
         });
 }
 
@@ -273,10 +279,13 @@ exports.searchByUser = function (req, res){
 exports.search = function (req, res) {
     Order.getOrders()
         .then(orders => {
-            res.status(HttpStatus.OK).json(orders);//.map(Order.orderToFront));
+            const promises = orders.map(Order.orderToFront);
+            Promise.all(promises).then( orders => {
+                res.status(HttpStatus.OK).json(orders);
+            })
         })
         .catch(err => {
             logger.error("Error on search orders " + err);
-            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json("Error al buscar los pedidos");
+            return common.handleError(res,{message:"Error al buscar los pedidos"},HttpStatus.INTERNAL_SERVER_ERROR);
         });
 };

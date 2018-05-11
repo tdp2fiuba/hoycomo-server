@@ -65,6 +65,17 @@ exports.getDishByIds = function(dish_ids) {
     return Dish.find({dish_id : {$in: dish_ids}});
 };
 
+/*
+exports.getDishByIds = function(dish_ids,cb) {
+    Dish.find({dish_id : {$in: dish_ids}},function (err,dishes) {
+        if (err){
+            cb("Error interno al buscar los platos");
+        }
+        cb(null,dishes);
+    });
+};
+*/
+
 exports.getDishByStore = function(data) {
     return new Promise(function(resolve, reject) {
         Dish.find({store_id: data.store_id})
