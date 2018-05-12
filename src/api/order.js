@@ -136,7 +136,10 @@ function _read(req, res, user) {
                 } else if (user.store_id && (user.store_id != order.store_id)) {
                     return common.handleError(res,{message:"Error de autorización"},HttpStatus.UNAUTHORIZED);
                 }
-                res.status(HttpStatus.OK).json(Order.orderToFront(order));
+                Order.orderToFront(order)
+                .then( order => {
+                    res.status(HttpStatus.OK).json(order);
+                })
             } else {
                 return common.handleError(res,{message:"Order non exists"},HttpStatus.NO_CONTENT);
             }

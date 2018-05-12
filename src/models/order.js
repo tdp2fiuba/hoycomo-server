@@ -15,6 +15,7 @@ function stateToFront(states) {
 function orderToFront(order) {
 
     const _order = {
+        id: order.order_id,
         price : order.price,
         items: order.items,
         discount : order.discount || 0,
