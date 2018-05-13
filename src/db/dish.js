@@ -62,7 +62,10 @@ exports.getDishById = function(dish_id) {
 };
 
 exports.getDishByIds = function(dish_ids) {
-    return Dish.find({dish_id : {$in: dish_ids}});
+    return Dish.find({dish_id : {$in: dish_ids}})
+        //.skip(data.page*data.count)
+        //.limit(parseInt(data.count))
+        .sort({register_timestamp: 'asc'});
 };
 
 /*
@@ -79,8 +82,8 @@ exports.getDishByIds = function(dish_ids,cb) {
 exports.getDishByStore = function(data) {
     return new Promise(function(resolve, reject) {
         Dish.find({store_id: data.store_id})
-            .skip(data.page*data.count)
-            .limit(parseInt(data.count))
+            //.skip(data.page*data.count)
+            //.limit(parseInt(data.count))
             .sort({register_timestamp: 'asc'})
             .then(dishes => {
                 resolve(dishes);
@@ -95,8 +98,8 @@ exports.getDishByStore = function(data) {
 exports.getDishs = function(data) {
     return new Promise(function(resolve, reject) {
         Dish.find()
-            .skip(data.page*data.count)
-            .limit(parseInt(data.count))
+            //.skip(data.page*data.count)
+            //.limit(parseInt(data.count))
             .sort({register_timestamp: 'asc'})
             .then(dishes => {
                 resolve(dishes);

@@ -95,15 +95,10 @@ function _create(req, res, user) {
             logger.info("Order created:" + order);
             //TODO: UPDATE ADDRESS AL USUARIO, si es la primera como la defautl si no en other_address
 
-            //Enviar email al comercio.
-            mailing.sendHTMLMail(data.store.email,"Nuevo pedido", "<p>Nuevo pedido:</p>");
-
-            //Enviar notificaciones push desp de 10 seg
-            //setTimeout(function () {
-            //    firebase.sendNotification(user.firebase_token,"Tu pedido se está preparando!", "");
-            //},10000);
-
-            res.status(HttpStatus.CREATED).json(Order.orderToFront(order));
+            Order.orderToFront(order)
+                .then( order => {
+                    res.status(HttpStatus.CREATED).json(order);
+                })
         })
         .catch(err => {
             logger.error("Error on create order " + err);
@@ -154,7 +149,7 @@ exports.read = function (req, res) {
 };
 
 //Por el momento solo actualiza el estado
-function update(req,res,user){
+function _update(req,res,user){
     const id = req.params.order_id;
     const state = req.body.state.toUpperCase();
 
@@ -171,7 +166,7 @@ function update(req,res,user){
                 return common.handleError(res,{message:"Error de autorización"},HttpStatus.UNAUTHORIZED);
             }
 
-            if (order.state.state === state){
+            if (Order.lastState(order).state === state){
                 return common.handleError(res,{message:"Ese estado es el actual"},HttpStatus.NO_CONTENT);
             }
 
@@ -195,6 +190,7 @@ function update(req,res,user){
                                 text = "";
                                 break;
                             case 'DELIVERED':
+                                //TODO: agregar data para notificación con botones
                                 title = "Pedido entregado, gracias por confiar en nosotros";
                                 text = "";
                                 break;
@@ -206,7 +202,10 @@ function update(req,res,user){
 
                         firebase.sendNotification(orderUser.firebase_token,title,text);
                     });
-                    res.status(HttpStatus.OK).json(Order.orderToFront(order));
+                    Order.orderToFront(order)
+                        .then(_order => {
+                            res.status(HttpStatus.OK).json(_order);
+                        });
                 })
                 .catch(err => {
                     logger.error("Error on update order " + err);
@@ -214,17 +213,17 @@ function update(req,res,user){
                 });
 
         } else {
-            return common.handleError(res,{message:"Order non exists"},HttpStatus.NO_CONTENT);
+            return common.handleError(res,{message:"El pedido no existe"},HttpStatus.NO_CONTENT);
         }
     })
     .catch(err => {
         console.log(err);
-        return common.handleError(res,{message:"Error on read order"},HttpStatus.INTERNAL_SERVER_ERROR);
+        return common.handleError(res,{message:"Error interno."},HttpStatus.INTERNAL_SERVER_ERROR);
     });
 }
 
 exports.update = function (req, res) {
-    beaber.authorization(req, res, update);
+    beaber.authorization(req, res, _update);
 };
 
 function _searchByStore(req, res, user){

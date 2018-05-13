@@ -78,17 +78,17 @@ exports.getOrderById = function(order_id) {
 
 exports.getOrderByStore = function(store_id) {
     return Order.find({store_id: store_id})
-            .sort({register_timestamp: 'asc'});
+            .sort({register_timestamp: 'desc'});
 };
 
 exports.getOrderByUser = function(user_id) {
     return Order.find({user_id: user_id})
-        .sort({register_timestamp: 'asc'});
+        .sort({register_timestamp: 'desc'});
 };
 
 exports.getOrders = function() {
     return Order.find()
-            .sort({register_timestamp: 'asc'})
+            .sort({register_timestamp: 'desc'})
 };
 
 exports.delete = function(order_id) {

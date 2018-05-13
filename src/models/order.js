@@ -3,13 +3,15 @@ const Dish = require('../models/dish.js');
 const Store = require('../models/store.js');
 const User = require('../models/user.js');
 
-function stateToFront(states) {
-    const lastState = states[states.length - 1];
+function lastState(order){
+    let lastState;
+    order.states.forEach(function (state) {
+        if (!lastState || Date(state.timestamp) >= Date(lastState.timestamp)){
+            lastState = {state: state.state, timestamp: state.timestamp};
+        }
+    });
 
-    return {
-        name: lastState.state,
-        timestamp: lastState.timestamp
-    };
+    return lastState;
 }
 
 function orderToFront(order) {
@@ -19,11 +21,26 @@ function orderToFront(order) {
         price : order.price,
         items: order.items,
         discount : order.discount || 0,
-        states : order.states,
+        states : [],
         description: order.description,
         register_timestamp : order.register_timestamp,
         address: order.address
     };
+
+    if (order.states.length <= 0) {
+        order.states = { state: 'TAKEN', timestamp: order.register_timestamp};
+    }
+
+    let lastState;
+    order.states.forEach(function (state) {
+        if (!lastState || Date(state.timestamp) >= Date(lastState.timestamp)){
+            lastState = {state: state.state, timestamp: state.timestamp};
+        }
+        _order.states.push({state: state.state, timestamp: state.timestamp});
+    });    
+
+    _order.state = lastState;
+
     const dishes_id = [];
     order.items.forEach(function (item) {
         dishes_id.push(item.id);
@@ -57,6 +74,7 @@ function orderToFront(order) {
 
 }
 
+exports.lastState = lastState;
 exports.orderToFront = orderToFront;
 
 exports.createOrder = function(data) {
