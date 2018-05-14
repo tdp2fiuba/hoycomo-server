@@ -256,12 +256,13 @@ function _searchByUser(req, res, user){
     //const page = req.query.page || common.DEFAULT_PAGE;
     //const count = req.query.count || common.DEFAULT_SIZE;
     const user_id = req.params.user_id;
+    let state = req.query.state;
 
     if (user.user_id && (user.user_id != user_id)){
         return common.handleError(res,{message:"Error de autorización"},HttpStatus.UNAUTHORIZED);
     }
 
-    Order.getOrderByUserId(user_id)//{page: page,count: count,user_id: user_id})
+    Order.getOrderByUserId({user_id:user_id,state: state})//{page: page,count: count,user_id: user_id})
         .then(orders => {
             const promises = orders.map(Order.orderToFront);
             Promise.all(promises).then( orders => {

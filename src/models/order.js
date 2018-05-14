@@ -125,12 +125,12 @@ exports.getOrderByStoreId= function(id) {
     return orderDB.getOrderByStore(id);
 };
 
-exports.getOrderByUserId = function(id) {
-    if (!id) {
-        return Promise.reject('Missing Store ID');
+exports.getOrderByUserId = function(data) {
+    if (!data.user_id) {
+        return Promise.reject('Missing User ID');
     }
 
-    return orderDB.getOrderByUser(id);
+    return orderDB.getOrderByUser(data.user_id,data);
 };
 
 exports.getOrders = function() {

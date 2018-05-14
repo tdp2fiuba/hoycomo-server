@@ -33,6 +33,13 @@ const orderSchema = new Schema({
         },
         timestamp: {type: Date, default: Date.now}
     }],
+    state:{
+        state: {
+            type: String,
+            enum: [STATE_TAKEN, STATE_PREPARATION, STATE_DISPATCHED, STATE_DELIVERED, STATE_CANCELLED]
+        },
+        timestamp: {type: Date, default: Date.now}
+    },
     address: {
         name : {type : String},
         lat : {type : Number},
@@ -50,11 +57,14 @@ exports.Order = Order;
 exports.states = [STATE_TAKEN, STATE_PREPARATION, STATE_DISPATCHED, STATE_DELIVERED, STATE_CANCELLED];
 
 exports.saveOrder = function(data) {
-    if (!data.states){
-        data.states = [{
+    if (!data.state) {
+        data.state = {
             state: STATE_TAKEN,
             timestamp: Date.now()
-        }]
+        };
+    }
+    if (!data.states){
+        data.states = [data.state];
     }
     const order = new Order(data);
     return order.save();
@@ -66,10 +76,10 @@ exports.updateOrder = function(order_id,data) {
 
 exports.updateOrderState = function(order_id,state){
     const _state = {
-            state: state,
+            state: state || STATE_TAKEN,
             timestamp: Date.now()
         };
-    return Order.findOneAndUpdate({order_id : order_id},{ $push: { states: _state } },{new: true});
+    return Order.findOneAndUpdate({order_id : order_id},{ $push: { states: _state }, state: _state },{new: true});
 };
 
 exports.getOrderById = function(order_id) {
@@ -81,8 +91,12 @@ exports.getOrderByStore = function(store_id) {
             .sort({register_timestamp: 'desc'});
 };
 
-exports.getOrderByUser = function(user_id) {
-    return Order.find({user_id: user_id})
+exports.getOrderByUser = function(user_id,data) {
+    const dataFind = {user_id: user_id};
+    if (data.state){
+        dataFind['state.state'] = {$in : data.state};
+    }
+    return Order.find(dataFind)
         .sort({register_timestamp: 'desc'});
 };
 
