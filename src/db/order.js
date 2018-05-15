@@ -3,7 +3,7 @@ const AutoIncrement = require('mongoose-sequence')(mongoose);
 const mongoose_delete = require('mongoose-delete');
 
 const STATE_TAKEN = 'TAKEN';
-const STATE_PREPARATION  = 'PREPARATION ';
+const STATE_PREPARATION  = 'PREPARATION';
 const STATE_DISPATCHED = 'DISPATCHED';
 const STATE_DELIVERED = 'DELIVERED';
 const STATE_CANCELLED = 'CANCELLED';

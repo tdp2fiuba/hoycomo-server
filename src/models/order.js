@@ -47,7 +47,27 @@ function orderToFront(order) {
     });
     return Dish.getDishByIDs(dishes_id)
     .then( dishes => {
-        _order.dishes = dishes.map(Dish.dishToFront);
+        const _dishes = {};//dishes.map(Dish.dishToFront);
+        dishes.forEach(function (dish) {
+            _dishes[dish.dish_id] = Dish.dishToFront(dish);
+        });
+
+        _order.dishes = _dishes;
+
+        const _items = [];
+        order.items.forEach(function (item) {
+            let dish = _dishes[item.id];
+            let _item = {};
+            _item.id = item.id;
+            _item.comments = item.comments;
+            _item.quantity = item.quantity;
+            _item.garnish = item.garnish;
+            _item.price = dish.price;
+            _item.name = dish.name;
+            _items.push(_item);
+        });
+        _order.items = _items;
+
         return Promise.resolve(_order);
     })
     .then(_order => {
