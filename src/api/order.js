@@ -136,7 +136,7 @@ function _read(req, res, user) {
                     res.status(HttpStatus.OK).json(order);
                 })
             } else {
-                return common.handleError(res,{message:"Order non exists"},HttpStatus.NO_CONTENT);
+                return common.handleError(res,{message:"Order non exists"},HttpStatus.NOT_FOUND);
             }
         })
         .catch(err => {
@@ -151,9 +151,9 @@ exports.read = function (req, res) {
 //Por el momento solo actualiza el estado
 function _update(req,res,user){
     const id = req.params.order_id;
-    const state = req.body.state.toUpperCase();
+    const state = req.body.state ? req.body.state.toUpperCase() : null;
 
-    if (! common.checkDefinedParameters([id],"update order")){
+    if (! common.checkDefinedParameters([id,state],"update order")){
         return common.handleError(res,{code:common.ERROR_PARAMETER_MISSING,message:"Breach of preconditios (missing parameters)"},HttpStatus.NOT_ACCEPTABLE);
     }
 
@@ -167,11 +167,11 @@ function _update(req,res,user){
             }
 
             if (Order.lastState(order).state === state){
-                return common.handleError(res,{message:"Ese estado es el actual"},HttpStatus.NO_CONTENT);
+                return common.handleError(res,{message:"Ese estado es el actual"},HttpStatus.NOT_FOUND);
             }
 
             if (!Order.validateState(state)){
-                return common.handleError(res,{message:"Estado inválido"},HttpStatus.NO_CONTENT);
+                return common.handleError(res,{message:"Estado inválido"},HttpStatus.NOT_FOUND);
             }
 
             Order.updateOrderState(id,state)
@@ -181,12 +181,12 @@ function _update(req,res,user){
                         if (state =='DELIVERED') {
                             const data = {
                                 topic: "DELIVERED",
-                                storeId: order.store_id,
-                                orderId: order.order_id
+                                storeId: toString(order.store_id),
+                                orderId: toString(order.order_id)
                             };
                             firebase.sendNotification(orderUser.firebase_token,"Pedido entregado 🛵","Gracias por confiar en HoyComo!",data);
                         } else if (state =='CANCELLED') {
-                            firebase.sendNotification(orderUser.firebase_token,"Tu pedido fue cancelado por el comercio 😔","");
+                            firebase.sendNotification(orderUser.firebase_token,"Tu pedido fue cancelado por el comercio 😔","Contactate con el comercio para saber los motivos");
                         }
                     });
                     Order.orderToFront(order)
@@ -200,7 +200,7 @@ function _update(req,res,user){
                 });
 
         } else {
-            return common.handleError(res,{message:"El pedido no existe"},HttpStatus.NO_CONTENT);
+            return common.handleError(res,{message:"El pedido no existe"},HttpStatus.NOT_FOUND);
         }
     })
     .catch(err => {
