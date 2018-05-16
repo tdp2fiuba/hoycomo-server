@@ -17,7 +17,21 @@ exports.assignRoutes = function (app) {
 		})
 	});
 
-    app.get(apiUtilsBase + '/test',function(req,res){
+    app.get('/test/firebase',function(req,res){
         firebase.sendNotification("eYgbf7YD2OQ:APA91bG6eC9fGohU31gC6b_kcuPEk_xR_kjzxt0a83yess0uR4RnEYoosCniZxKyXuvdLoMx0wN9aDFNWU-CIteNR4pv_3PO3KzSzvWxl4tmdbIlUjdMo3hHaWMLvloeXg7BoxF_I1se","TEST","Hola máquinaaa");
+        res.status(HttpStatus.OK).json({success:true});
     });
+
+    app.get('/test/firebase/delivered',function(req,res){
+
+    	const token = req.query.token;
+
+    	const data = {
+            topic: "DELIVERED",
+            storeId: "1",
+            orderId: "1"
+        };
+        firebase.sendNotification(token,"Pedido entregado 🛵","Gracias por confiar en HoyComo!",data);
+        res.status(HttpStatus.OK).json({success:true});
+	});
 };

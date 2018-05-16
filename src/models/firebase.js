@@ -6,21 +6,19 @@ admin.initializeApp({
     databaseURL: 'https://hoycomo-1522801207352.firebaseio.com'
 });
 
-
-const payload = {
-    notification: {
-        title: "HoyComo",
-        body: "HoyComo"
-    }
-
-};
-
-exports.sendNotification = function(token,title,body){
+//data: Un mapa de pares clave-valor donde todos los valores y las claves son strings.
+exports.sendNotification = function(token,title,body,data){
     if (!token) return;
-    payload.notification.title = title || "HoyComo";
-    payload.notification.body = body || "HoyComo";
+    const payload = {
+        notification: {
+            title: title,
+            body: body
+        },
+        token: token,
+        data: data
+    };
 
-    admin.messaging().sendToDevice(token, payload)
+    admin.messaging().send(payload)
         .then(function(response) {
             console.log("Successfully sent message:", response);
         })

@@ -178,29 +178,16 @@ function _update(req,res,user){
                 .then(order => {
                     User.getUserByID(order.user_id)
                     .then(orderUser => {
-                        let title = "";
-                        let text = "";
-                        switch(state) {
-                            case 'PREPARATION':
-                                title = "Tu pedido se está preparando!";
-                                text = "";
-                                break;
-                            case 'DISPATCHED':
-                                title = "Tu pedido está en camino! 🛵";
-                                text = "";
-                                break;
-                            case 'DELIVERED':
-                                //TODO: agregar data para notificación con botones
-                                title = "Pedido entregado, gracias por confiar en nosotros";
-                                text = "";
-                                break;
-                            case 'CANCELLED':
-                                title = "Tu pedido fue cancelado por el comercio";
-                                text = "";
-                                break;
+                        if (state =='DELIVERED') {
+                            const data = {
+                                topic: "DELIVERED",
+                                storeId: order.store_id,
+                                orderId: order.order_id
+                            };
+                            firebase.sendNotification(orderUser.firebase_token,"Pedido entregado 🛵","Gracias por confiar en HoyComo!",data);
+                        } else if (state =='CANCELLED') {
+                            firebase.sendNotification(orderUser.firebase_token,"Tu pedido fue cancelado por el comercio 😔","");
                         }
-
-                        firebase.sendNotification(orderUser.firebase_token,title,text);
                     });
                     Order.orderToFront(order)
                         .then(_order => {

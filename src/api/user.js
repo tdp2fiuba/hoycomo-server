@@ -101,8 +101,30 @@ function update(req,res,user){
     });
 }
 
+
 exports.update = function (req, res) {
     beaber.authorization(req, res, update);
+};
+
+function updateFirebaseToken(req,res,user){
+    const token = req.body.firebase_token;
+
+    if (! common.checkDefinedParameters([token],"update user")){
+        return common.handleError(res,{code:common.ERROR_PARAMETER_MISSING,message:"Breach of preconditios (missing parameters)"},HttpStatus.NOT_ACCEPTABLE);
+    }
+
+    User.updateUser(user.user_id,{firebase_token: token})
+    .then(user => {
+        res.status(HttpStatus.OK).json();
+    })
+    .catch(err => {
+        console.log("Err on update firebase id " + err);
+        res.status(HttpStatus.INTERNAL_SERVER_ERROR).json("Error al actualizar el usuario");
+    });
+}
+
+exports.updateFirebaseToken = function (req, res) {
+    beaber.authorization(req, res, updateFirebaseToken());
 };
 
 
