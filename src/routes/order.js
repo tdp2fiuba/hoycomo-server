@@ -19,6 +19,9 @@ exports.assignRoutes = function (app) {
     //Update order
     app.put(apiHostBase + '/order/:order_id', order.update);
 
+    //Reject order delivered
+    app.post(apiHostBase + '/order/:order_id/reject', order.reject);
+
     //Search orders for debug
     app.get(apiHostBase + '/orders',order.search);
 };

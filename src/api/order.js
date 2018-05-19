@@ -279,3 +279,41 @@ exports.search = function (req, res) {
             return common.handleError(res,{message:"Error al buscar los pedidos"},HttpStatus.INTERNAL_SERVER_ERROR);
         });
 };
+
+function _reject(req, res, user){
+    const order_id = req.params.order_id;
+
+    Order.getOrderById(order_id)
+    .then(order => {
+        if (!order){
+            return common.handleError(res,{message:"Pedido inexistente"},HttpStatus.NOT_FOUND);
+        }
+
+        if (user.user_id && (order.user_id != user.user_id)){
+            return common.handleError(res,{message:"Error de autorización"},HttpStatus.UNAUTHORIZED);
+        }
+
+        if (Order.lastState(order).state !== 'DELIVERED'){
+            return common.handleError(res,{message:"Error de autorización, el pedido no fue entregado"},HttpStatus.UNAUTHORIZED);
+        }
+
+        Order.updateOrderState(order_id,'DISPATCHED')
+        .then(order => {
+            Order.orderToFront(order)
+            .then(order => {
+                //Envio email avisando al comercio que el cliente rechazó el pedido
+                mailing.sendHTMLMail(order.store.email,"El cliente " + order.user.first_name + " " + order.user.last_name + " rechazó el pedido que marcaste como entregado", "<p><strong>" + order.user.first_name + " " + order.user.last_name + "</strong> rechazó el pedido <strong>"+ order.order_id +"</strong> el cual marcaste como entregado con <strong>"+ order.store.name +"</strong></p>");
+
+                res.status(HttpStatus.OK).json(order);
+            });
+        });
+    })
+    .catch(err => {
+        logger.error("Error on reject order " + err);
+        return common.handleError(res,{message:"Error al interno :"},HttpStatus.INTERNAL_SERVER_ERROR);
+    });
+}
+
+exports.reject = function (req, res){
+    beaber.authorization(req, res, _reject);
+};
