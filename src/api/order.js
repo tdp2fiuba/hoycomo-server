@@ -309,7 +309,7 @@ function _reject(req, res, user){
         });
     })
     .catch(err => {
-        logger.error("Error on reject order " + err);
+        console.log("Error on reject order " + err);
         return common.handleError(res,{message:"Error al interno :"},HttpStatus.INTERNAL_SERVER_ERROR);
     });
 }
