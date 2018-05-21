@@ -9,11 +9,14 @@ admin.initializeApp({
 //data: Un mapa de pares clave-valor donde todos los valores y las claves son strings.
 exports.sendNotification = function(token,title,body,data){
     if (!token) return;
+    if (!data) data = {};
+    data.title = title;
+    data.message = body;
     const payload = {
-        notification: {
-            title: title,
-            body: body
-        },
+        //notification: {
+        //    title: title,
+        //    body: body
+        //},
         token: token,
         data: data
     };
