@@ -24,7 +24,7 @@ exports.assignRoutes = function (app) {
 
     app.get('/test/firebase/delivered',function(req,res){
 
-    	const token = "eYgbf7YD2OQ:APA91bG6eC9fGohU31gC6b_kcuPEk_xR_kjzxt0a83yess0uR4RnEYoosCniZxKyXuvdLoMx0wN9aDFNWU-CIteNR4pv_3PO3KzSzvWxl4tmdbIlUjdMo3hHaWMLvloeXg7BoxF_I1se";//req.query.token;
+    	const token = req.query.token ? req.query.token : "eYgbf7YD2OQ:APA91bG6eC9fGohU31gC6b_kcuPEk_xR_kjzxt0a83yess0uR4RnEYoosCniZxKyXuvdLoMx0wN9aDFNWU-CIteNR4pv_3PO3KzSzvWxl4tmdbIlUjdMo3hHaWMLvloeXg7BoxF_I1se";
 
     	const data = {
             topic: "DELIVERED",
