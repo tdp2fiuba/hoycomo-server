@@ -181,8 +181,8 @@ function _update(req,res,user){
                         if (state =='DELIVERED') {
                             const data = {
                                 topic: "DELIVERED",
-                                storeId: toString(order.store_id),
-                                orderId: toString(order.order_id)
+                                storeId: order.store_id.toString() ,
+                                orderId: order.order_id.toString()
                             };
                             firebase.sendNotification(orderUser.firebase_token,"Pedido entregado 🛵","Gracias por confiar en HoyComo!",data);
                         } else if (state =='CANCELLED') {
@@ -282,6 +282,10 @@ exports.search = function (req, res) {
 
 function _reject(req, res, user){
     const order_id = req.params.order_id;
+
+    if (! common.checkDefinedParameters([order_id],"reject order")){
+        return common.handleError(res,{code:common.ERROR_PARAMETER_MISSING,message:"Id del pedido es necesario"},HttpStatus.BAD_REQUEST);
+    }
 
     Order.getOrderById(order_id)
     .then(order => {
