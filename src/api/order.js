@@ -306,7 +306,7 @@ function _reject(req, res, user){
             Order.orderToFront(order)
             .then(order => {
                 //Envio email avisando al comercio que el cliente rechazó el pedido
-                mailing.sendHTMLMail(order.store.email,"El cliente " + order.user.first_name + " " + order.user.last_name + " rechazó el pedido que marcaste como entregado", "<p><strong>" + order.user.first_name + " " + order.user.last_name + "</strong> rechazó el pedido <strong>"+ order.order_id +"</strong> el cual marcaste como entregado con <strong>"+ order.store.name +"</strong></p>");
+                mailing.sendHTMLMail(order.store.email,"El cliente " + order.user.first_name + " " + order.user.last_name + " rechazó el pedido que marcaste como entregado", "<p><strong>"+ order.store.name +"</strong></p><p><strong>" + order.user.first_name + " " + order.user.last_name + "</strong> rechazó el pedido <strong>"+ order.id +"</strong> el cual marcaste como entregado.</p>");
 
                 res.status(HttpStatus.OK).json(order);
             });
