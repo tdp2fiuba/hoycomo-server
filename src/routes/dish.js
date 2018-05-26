@@ -29,6 +29,6 @@ exports.assignRoutes = function (app) {
     app.get(apiHostBase + '/dishes', dish.searchAll);
 
     //active all dishes
-    app.get(apiHostBase + '/dishes/enable', dish.enableAll);
+    //app.get(apiHostBase + '/dishes/enable', dish.enableAll);
 
 };
