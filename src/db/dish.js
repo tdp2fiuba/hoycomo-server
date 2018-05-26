@@ -64,7 +64,7 @@ exports.getDishById = function(dish_id) {
 
 exports.getDishByIds = function(dish_ids,data) {
     const find_data = {dish_id : {$in: dish_ids}};
-    if (data && !data.all){
+    if (!data || (data && !data.all)){
         find_data.disable = false;
     }
 
