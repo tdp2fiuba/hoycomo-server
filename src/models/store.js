@@ -2,9 +2,6 @@ const storeDB = require('../db/store.js');
 const common = require('../utils/common.js');
 
 function storeToFront(store) {
-    //mock
-    const minMock = Math.floor((Math.random() * 20) + 30);
-    const maxMock = minMock + Math.floor((Math.random() * 40) + 1);
     const mockAvailability = {
         monday: {
             start_time: "18:30:00",
@@ -42,13 +39,11 @@ function storeToFront(store) {
         business_name: store.business_name,
         address: store.address,
         email: store.email,
-        //mock
+        average_price: store.average_price,
+        rating: store.rating,
         food_types: store.foodTypes,
         avatar: store.avatar ? store.avatar : common.apiBaseURL() + '/images' + '/avatar_default.jpg',
-        delay_time: {
-            min: minMock,
-            max: maxMock
-        },
+        delay_time: store.delay_time,
         availability: store.availability ? store.availability : mockAvailability
     }
 

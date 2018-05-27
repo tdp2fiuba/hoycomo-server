@@ -23,10 +23,9 @@ const storeSchema = new Schema({
         lat : {type : Number},
         lon : {type : Number}
   },
-  delay_time: {
-    max : {type : Number},
-    min : {type : Number}
-  },
+  delay_time: {type : Number},
+  rating: {type : Number},
+  average_price: {type: Number},
   availability: {
       monday: {
           start_time: {type: String},
