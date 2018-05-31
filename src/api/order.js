@@ -222,12 +222,12 @@ function _searchByStore(req, res, user){
         return common.handleError(res,{message:"Error de autorización"},HttpStatus.UNAUTHORIZED);
     }
 
-    Order.getOrderByStoreId(store_id)//{page: page,count: count,store_id: store_id})
+    Order.getOrderByStoreId(store_id)
     .then(orders => {
         const promises = orders.map(Order.orderToFront);
         Promise.all(promises).then( orders => {
             res.status(HttpStatus.OK).json(orders);
-        })
+        });
     })
     .catch(err => {
         console.log("Error on search order " + err);
