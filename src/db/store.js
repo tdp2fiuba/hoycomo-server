@@ -18,6 +18,7 @@ const storeSchema = new Schema({
       email : { type: String },
       avatar: {type: String},
       rating: {type: Number},
+      average_price: {type: Number},
       foodTypes: [{type: String}],
       address : {
             name : {type : String},

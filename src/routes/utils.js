@@ -1,5 +1,6 @@
 const apiUtilsBase = '/utils';
 const googleMaps = require('../models/googlemaps.js');
+const Store = require('../models/store.js');
 const HttpStatus = require('http-status-codes');
 const firebase = require('../models/firebase.js');
 
@@ -34,4 +35,17 @@ exports.assignRoutes = function (app) {
         firebase.sendNotification(token,"Pedido entregado 🛵","Gracias por confiar en HoyComo!",data);
         res.status(HttpStatus.OK).json({success:true});
 	});
+
+    app.get('/store/recalculateAveragePrice',function(req,res){
+    	Store.getStores({page:0,count:1000})
+			.then(stores => {
+                const promises = [];
+                stores.forEach(store => {
+                	promises.push(Store.recalculateStoreAveragePrice(store.store_id));
+				});
+                Promise.all(promises).then( orders => {
+                    res.status(HttpStatus.OK).json({success:true});
+                });
+			});
+    });
 };

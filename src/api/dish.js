@@ -81,6 +81,9 @@ exports.create = function (req, res) {
         .then(dish => {
             logger.info("Dish created:" + dish);
             res.status(HttpStatus.CREATED).json(Dish.dishToFront(dish));
+
+            //recalculate average price
+            Store.recalculateStoreAveragePrice(store_id);
         })
         .catch(err => {
             logger.error("Error on create dish " + err);
@@ -140,6 +143,9 @@ function _disable(req, res,user) {
     Dish.updateDish(id,{disable:true})
         .then((dish) => {
             res.status(HttpStatus.OK).json(Dish.dishToFront(dish));
+
+            //recalculate average price
+            Store.recalculateStoreAveragePrice(dish.store_id);
         })
         .catch(err => {
             console.log("Error on disable dish " + err);
@@ -162,6 +168,9 @@ function _enable(req, res, user) {
     Dish.updateDish(id,{disable:false})
         .then((dish) => {
             res.status(HttpStatus.OK).json(Dish.dishToFront(dish));
+
+            //recalculate average price
+            Store.recalculateStoreAveragePrice(dish.store_id);
         })
         .catch(err => {
             console.log("Error on enable dish " + err);
@@ -188,6 +197,9 @@ exports.update = function (req, res) {
     Dish.updateDish(id,data)
         .then((dish) => {
             res.status(HttpStatus.OK).json(Dish.dishToFront(dish));
+
+            //recalculate average price
+            Store.recalculateStoreAveragePrice(dish.store_id);
         })
         .catch(err => {
             logger.error("Error on update dish " + err);
@@ -206,6 +218,9 @@ exports.delete = function (req, res) {
     Dish.delete(id)
         .then(() => {
             res.status(HttpStatus.OK).json("Plato eliminado");
+
+            //recalculate average price
+            Store.recalculateStoreAveragePrice(dish.store_id);
         })
         .catch(err => {
             console.log("Error on delete dish " + err);

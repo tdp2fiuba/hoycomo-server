@@ -1,5 +1,6 @@
 const storeDB = require('../db/store.js');
 const Review = require('../models/review.js');
+const Dish = require('../models/dish.js');
 const common = require('../utils/common.js');
 
 function storeToFront(store) {
@@ -44,6 +45,7 @@ function storeToFront(store) {
         address: store.address,
         email: store.email,
         rating: store.rating,
+        average_price: store.average_price,
         //mock
         food_types: store.foodTypes,
         avatar: store.avatar ? store.avatar : common.apiBaseURL() + '/images' + '/avatar_default.jpg',
@@ -206,6 +208,32 @@ exports.recalculateStoreRating = function (store_id){
         })
         .catch(err => {
             console.log("Error on recalculate store rating, " + err);
+        })
+};
+
+exports.recalculateStoreAveragePrice = function (store_id){
+    if (!store_id) {
+        console.log("Error on recalculate average price, missing store id");
+    }
+
+    storeDB.getStoreById(store_id)
+        .then(store => {
+            //buscar dishes y calcular el promedio
+            Dish.getDishsByStore({page: 0,count: 1000,store_id: store_id})
+                .then(dishes => {
+                    if (!dishes || dishes.length <= 0) return;
+
+                    let price_sum = 0;
+                    dishes.forEach(dish => {
+                        price_sum += parseInt(dish.price);
+                    });
+
+                    store.average_price = price_sum / dishes.length;
+                    store.save();
+                })
+        })
+        .catch(err => {
+            console.log("Error on recalculate average price " + err);
         })
 };
 
