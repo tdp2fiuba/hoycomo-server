@@ -185,6 +185,7 @@ function _update(req,res,user){
                                 orderId: order.order_id.toString()
                             };
                             firebase.sendNotification(orderUser.firebase_token,"Pedido entregado 🛵","Gracias por confiar en HoyComo!",data);
+                            Store.recalculateStoreDelayTime(order.store_id);
                         } else if (state =='CANCELLED') {
                             firebase.sendNotification(orderUser.firebase_token,"Tu pedido fue cancelado por el comercio 😔","Contactate con el comercio para saber los motivos");
                         }
@@ -309,6 +310,8 @@ function _reject(req, res, user){
                 mailing.sendHTMLMail(order.store.email,"El cliente " + order.user.first_name + " " + order.user.last_name + " rechazó el pedido que marcaste como entregado", "<p><strong>"+ order.store.name +"</strong></p><p><strong>" + order.user.first_name + " " + order.user.last_name + "</strong> rechazó el pedido <strong>"+ order.id +"</strong> el cual marcaste como entregado.</p>");
 
                 res.status(HttpStatus.OK).json(order);
+
+                Store.recalculateStoreDelayTime(order.store_id);
             });
         });
     })
