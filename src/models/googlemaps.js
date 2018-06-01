@@ -29,3 +29,12 @@ exports.processAddress = function(address_name){
 		return address;
 	})
 };
+
+//return seconds to travel from origin to destination
+exports.timeToTravelDistance = function(origin_address,destination_address,callback){
+    return googleMapsClient.distanceMatrix({origins: [origin_address],destinations: [destination_address]})
+		.asPromise()
+        .then((response) => {
+            return response.json.rows[0].elements[0].duration.value;
+        })
+};

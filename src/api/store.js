@@ -5,6 +5,7 @@ const common = require('../utils/common.js');
 const googleMaps = require('../models/googlemaps.js');
 const imageDB = require('../db/image.js');
 const mailing = require('../tools/mailing.js');
+const beaber = require('../models/bearerAuthorization.js');
 let logger;
 
 exports.config = function(config){
@@ -167,6 +168,36 @@ exports.update = function (req, res) {
 			res.status(HttpStatus.INTERNAL_SERVER_ERROR).json("Error al actualizar el comercio");
 		});
 	});
+};
+
+function _updateDiscount(req,res,user){
+    const discount = parseFloat(req.body.discount);
+    const store_id = req.params.store_id;
+
+    if (!user.store_id || user.store_id != store_id) {
+        return common.handleError(res,{message:"Error de autorización"},HttpStatus.UNAUTHORIZED);
+    }
+
+    if (! common.checkDefinedParameters([discount],"update discount store")){
+        return common.handleError(res,{code:common.ERROR_PARAMETER_MISSING,message:"Breach of preconditios (missing parameters)"},HttpStatus.NOT_ACCEPTABLE);
+    }
+
+    if (discount > 100 || discount < 0 || isNaN(discount)) {
+        return common.handleError(res,{message:"El descuento es incorrecto"},HttpStatus.NOT_ACCEPTABLE);
+	}
+
+    Store.updateStore(store_id,{ discount: discount })
+        .then(store => {
+            res.status(HttpStatus.OK).json(Store.storeToFront(store));
+        })
+        .catch(err => {
+            logger.error("Error on update discount store " + err);
+            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json("Error al actualizar el descuento del comercio");
+        });
+}
+
+exports.updateDiscount = function (req, res) {
+    beaber.authorization(req, res, _updateDiscount);
 };
 
 exports.delete = function (req, res) {

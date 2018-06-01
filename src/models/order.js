@@ -2,6 +2,7 @@ const orderDB = require('../db/order.js');
 const Dish = require('../models/dish.js');
 const Store = require('../models/store.js');
 const User = require('../models/user.js');
+const googlemaps = require('../models/googlemaps.js');
 
 function lastState(order){
     let lastState;
@@ -161,6 +162,38 @@ exports.deleteById = function (id) {
     return orderDB.delete(id);
 };
 
+exports.calculateDeliveryTime = function(order) {
+    const states = order.states;
+    const address_order = order.address.name;
+    let preparation_timestamp;
+    let dispatched_timestamp;
+    return Store.getStoreByID(order.store_id)
+    .then(store => {
+        const address_store = store.address.name;
+        states.forEach(state => {
+            if (state.state == 'PREPARATION')
+                preparation_timestamp = (new Date(state.timestamp)).getTime() / 1000;
+            else if (state.state == 'DISPATCHED')
+                dispatched_timestamp = (new Date(state.timestamp)).getTime() / 1000;
+        });
+        if (dispatched_timestamp  && preparation_timestamp){
+            // calculado como la suma de los tiempos que tomaron todos sus pedidos dividido la cantidad
+            // de pedidos; el tiempo se calcula como la diferencia entre la fecha y hora en que el
+            // pedido fue puesto en preparación y la fecha y hora en que el pedido fue despachado
+            // más el tiempo calculado que se toma en ir desde la ubicación del comercio
+            // a la ubicación de entrega del pedido
+
+            const seconds_to_dispatched = dispatched_timestamp - preparation_timestamp;
+            return googlemaps.timeToTravelDistance(address_store,address_order)
+                .then(seconds_to_address => {
+                    return Promise.resolve(seconds_to_dispatched + seconds_to_address);
+                });
+
+        } else {
+            return Promise.resolve(-1);
+        }
+    });
+};
 
 exports.validateState = function (state) {
     return (orderDB.states.indexOf(state.toUpperCase()) > 0);

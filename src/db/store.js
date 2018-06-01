@@ -27,35 +27,36 @@ const storeSchema = new Schema({
     rating: {type : Number},
     average_price: {type: Number},
     availability: {
-      monday: {
+        monday: {
           start_time: {type: String},
           end_time: {type: String}
-      },
-      tuesday: {
+        },
+        tuesday: {
           start_time: {type: String},
           end_time: {type: String}
-      },
-      wednesday: {
+        },
+        wednesday: {
           start_time: {type: String},
           end_time: {type: String}
-      },
-      thursday: {
+        },
+        thursday: {
           start_time: {type: String},
           end_time: {type: String}
-      },
-      friday: {
+        },
+        friday: {
           start_time: {type: String},
           end_time: {type: String}
-      },
-      saturday: {
+        },
+        saturday: {
           start_time: {type: String},
           end_time: {type: String}
-      },
-      sunday: {
+        },
+        sunday: {
           start_time: {type: String},
           end_time: {type: String}
-      }
-    }
+        }
+    },
+    discount: {type: Number, default: 0}
 });
 
 storeSchema.plugin(AutoIncrement, {inc_field: 'store_id'});

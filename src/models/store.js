@@ -2,6 +2,7 @@ const storeDB = require('../db/store.js');
 const Review = require('../models/review.js');
 const Dish = require('../models/dish.js');
 const Order = require('../models/order.js');
+const googlemaps = require('../models/googlemaps.js');
 const common = require('../utils/common.js');
 
 function storeToFront(store) {
@@ -48,7 +49,8 @@ function storeToFront(store) {
         food_types: store.foodTypes,
         avatar: store.avatar ? store.avatar : common.apiBaseURL() + '/images' + '/avatar_default.jpg',
         delay_time: store.delay_time,
-        availability: store.availability ? store.availability : mockAvailability
+        availability: store.availability ? store.availability : mockAvailability,
+        discount: store.discount
     }
 
 
@@ -244,23 +246,15 @@ exports.recalculateStoreDelayTime = function (store_id){
                 .then(orders => {
                     if (!orders || orders.length <= 0) return;
 
-                    let delay_seconds = 0;
-                    orders.forEach(order => {
-                        const states = order.states;
-                        let taken_timestamp;
-                        let delivered_timestamp;
-                        states.forEach(state => {
-                            if (state.state == 'TAKEN')
-                                taken_timestamp = (new Date(state.timestamp)).getTime() / 1000;
-                            else if (state.state == 'DELIVERED')
-                                delivered_timestamp = (new Date(state.timestamp)).getTime() / 1000;
-                        });
-                        if (delivered_timestamp  && taken_timestamp)
-                            delay_seconds += delivered_timestamp - taken_timestamp;
-                    });
+                    Promise.all(orders.map(Order.calculateDeliveryTime))
+                    .then(delays => {
+                        let delay_seconds = delays.reduce(function(sum, delay) {
+                            return sum + (delay > 0 ? delay : 0);
+                        },0);
 
-                    store.delay_time = delay_seconds / orders.length;
-                    store.save();
+                        store.delay_time = delay_seconds / orders.length;
+                        store.save();
+                    });
                 })
         })
         .catch(err => {
