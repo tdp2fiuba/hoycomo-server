@@ -56,6 +56,26 @@ exports.buildFindStoreQuery = function (filters) {
                         }
                     };
                     break;
+                case "foodTypes":
+                    match.$match.foodTypes = {
+                        $in: filters.foodTypes
+                    };
+                    break;
+                case "delayTime":
+                    match.$match.delay_time = {
+                        $lte: filters.delayTime
+                    }; 
+                    break;
+                case "rating":
+                    match.$match.rating = {
+                        $gte: filters.rating
+                    };
+                    break;
+                case "averagePrice":
+                    match.$match.average_price = {
+                        $lte: filters.averagePrice
+                    }
+                    break;
             }
         }
         query.push(match);
