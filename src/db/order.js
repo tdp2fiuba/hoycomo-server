@@ -100,8 +100,8 @@ exports.getOrderByUser = function(user_id,data) {
         .sort({register_timestamp: 'desc'});
 };
 
-exports.getOrders = function() {
-    return Order.find()
+exports.getOrders = function(data) {
+    return Order.find(data)
             .sort({register_timestamp: 'desc'})
 };
 

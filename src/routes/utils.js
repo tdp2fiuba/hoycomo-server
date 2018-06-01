@@ -43,9 +43,22 @@ exports.assignRoutes = function (app) {
                 stores.forEach(store => {
                 	promises.push(Store.recalculateStoreAveragePrice(store.store_id));
 				});
-                Promise.all(promises).then( orders => {
+                Promise.all(promises).then( () => {
                     res.status(HttpStatus.OK).json({success:true});
                 });
 			});
+    });
+
+    app.get('/store/recalculateDelayTime',function(req,res){
+        Store.getStores({page:0,count:1000})
+            .then(stores => {
+                const promises = [];
+                stores.forEach(store => {
+                    promises.push(Store.recalculateStoreDelayTime(store.store_id));
+                });
+                Promise.all(promises).then( () => {
+                    res.status(HttpStatus.OK).json({success:true});
+                });
+            });
     });
 };

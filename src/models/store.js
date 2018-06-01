@@ -1,12 +1,11 @@
 const storeDB = require('../db/store.js');
 const Review = require('../models/review.js');
 const Dish = require('../models/dish.js');
+const Order = require('../models/order.js');
 const common = require('../utils/common.js');
 
 function storeToFront(store) {
     //mock
-    const minMock = Math.floor((Math.random() * 20) + 30);
-    const maxMock = minMock + Math.floor((Math.random() * 40) + 1);
     const mockAvailability = {
         monday: {
             start_time: "18:30:00",
@@ -44,15 +43,11 @@ function storeToFront(store) {
         business_name: store.business_name,
         address: store.address,
         email: store.email,
-        rating: store.rating,
         average_price: store.average_price,
-        //mock
+        rating: store.rating,
         food_types: store.foodTypes,
         avatar: store.avatar ? store.avatar : common.apiBaseURL() + '/images' + '/avatar_default.jpg',
-        delay_time: {
-            min: minMock,
-            max: maxMock
-        },
+        delay_time: store.delay_time,
         availability: store.availability ? store.availability : mockAvailability
     }
 
@@ -199,7 +194,7 @@ exports.recalculateStoreRating = function (store_id){
 
                 let rating_sum = 0;
                 reviews.forEach(review => {
-                    rating_sum += parseInt(review.rating);
+                    rating_sum += parseFloat(review.rating);
                 });
 
                 store.rating = rating_sum / reviews.length;
@@ -225,10 +220,46 @@ exports.recalculateStoreAveragePrice = function (store_id){
 
                     let price_sum = 0;
                     dishes.forEach(dish => {
-                        price_sum += parseInt(dish.price);
+                        price_sum += parseFloat(dish.price);
                     });
 
                     store.average_price = price_sum / dishes.length;
+                    store.save();
+                })
+        })
+        .catch(err => {
+            console.log("Error on recalculate average price " + err);
+        })
+};
+
+exports.recalculateStoreDelayTime = function (store_id){
+    if (!store_id) {
+        console.log("Error on recalculate delay time, missing store id");
+    }
+
+    storeDB.getStoreById(store_id)
+        .then(store => {
+            //buscar orders y calcular el promedio
+            Order.getOrders({store_id: store_id,'state.state': 'DELIVERED'})
+                .then(orders => {
+                    if (!orders || orders.length <= 0) return;
+
+                    let delay_seconds = 0;
+                    orders.forEach(order => {
+                        const states = order.states;
+                        let taken_timestamp;
+                        let delivered_timestamp;
+                        states.forEach(state => {
+                            if (state.state == 'TAKEN')
+                                taken_timestamp = (new Date(state.timestamp)).getTime() / 1000;
+                            else if (state.state == 'DELIVERED')
+                                delivered_timestamp = (new Date(state.timestamp)).getTime() / 1000;
+                        });
+                        if (delivered_timestamp  && taken_timestamp)
+                            delay_seconds += delivered_timestamp - taken_timestamp;
+                    });
+
+                    store.delay_time = delay_seconds / orders.length;
                     store.save();
                 })
         })

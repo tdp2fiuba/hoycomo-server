@@ -7,58 +7,55 @@ const dbTools = require('../tools/db_tools');
 Schema   = mongoose.Schema;	
 
 const storeSchema = new Schema({
-      name: { type: String },
-      description : { type: String },
-      login : { type: String, unique: true },
-      password : { type: String},
-      business_name : {type: String},
-      register_timestamp : { type: Date, default: Date.now },
-      last_edit_timestamp : { type: Date, default: Date.now },
-      state : { type: Number, default: 1 },
-      email : { type: String },
-      avatar: {type: String},
-      rating: {type: Number},
-      average_price: {type: Number},
-      foodTypes: [{type: String}],
-      address : {
-            name : {type : String},
-            lat : {type : Number},
-            lon : {type : Number}
+    name: { type: String },
+    description : { type: String },
+    login : { type: String, unique: true },
+    password : { type: String},
+    business_name : {type: String},
+    register_timestamp : { type: Date, default: Date.now },
+    last_edit_timestamp : { type: Date, default: Date.now },
+    state : { type: Number, default: 1 },
+    email : { type: String },
+    avatar: {type: String},
+    foodTypes: [{type: String}],
+    address : {
+        name : {type : String},
+        lat : {type : Number},
+        lon : {type : Number}
+    },
+    delay_time: {type : Number},
+    rating: {type : Number},
+    average_price: {type: Number},
+    availability: {
+      monday: {
+          start_time: {type: String},
+          end_time: {type: String}
       },
-      delay_time: {
-        max : {type : Number},
-        min : {type : Number}
+      tuesday: {
+          start_time: {type: String},
+          end_time: {type: String}
       },
-      availability: {
-          monday: {
-              start_time: {type: String},
-              end_time: {type: String}
-          },
-          tuesday: {
-              start_time: {type: String},
-              end_time: {type: String}
-          },
-          wednesday: {
-              start_time: {type: String},
-              end_time: {type: String}
-          },
-          thursday: {
-              start_time: {type: String},
-              end_time: {type: String}
-          },
-          friday: {
-              start_time: {type: String},
-              end_time: {type: String}
-          },
-          saturday: {
-              start_time: {type: String},
-              end_time: {type: String}
-          },
-          sunday: {
-              start_time: {type: String},
-              end_time: {type: String}
-          }
+      wednesday: {
+          start_time: {type: String},
+          end_time: {type: String}
+      },
+      thursday: {
+          start_time: {type: String},
+          end_time: {type: String}
+      },
+      friday: {
+          start_time: {type: String},
+          end_time: {type: String}
+      },
+      saturday: {
+          start_time: {type: String},
+          end_time: {type: String}
+      },
+      sunday: {
+          start_time: {type: String},
+          end_time: {type: String}
       }
+    }
 });
 
 storeSchema.plugin(AutoIncrement, {inc_field: 'store_id'});

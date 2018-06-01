@@ -7,7 +7,8 @@ function reviewToFront(review) {
         id: review.review_id,
         store_id: review.store_id,
         rating: review.rating,
-        body: review.body
+        body: review.body,
+        timestamp: review.timestamp
     };
 
     return User.getUserByID(review.user_id)

@@ -153,8 +153,8 @@ exports.getOrderByUserId = function(data) {
     return orderDB.getOrderByUser(data.user_id,data);
 };
 
-exports.getOrders = function() {
-    return orderDB.getOrders();
+exports.getOrders = function(data) {
+    return orderDB.getOrders(data);
 };
 
 exports.deleteById = function (id) {
