@@ -45,6 +45,7 @@ function _create(req, res, user) {
     const data = {
         user_id : user_id,
         store_id : store_id,
+        discount: req.body.discount,
         items: items,
         address: address,
         description : req.body.description
