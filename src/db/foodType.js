@@ -23,3 +23,20 @@ exports.getFoodTypes = () => {
             });
     });
 };
+
+exports.addFoodType = (foodType) => {
+    var newFoodType = new FoodTypes(foodType);
+    return new Promise((resolve, reject) => {
+        newFoodType.save()
+            .then((foodType) => resolve(foodType))
+            .catch((err) => reject(err));
+    });
+};
+
+exports.deleteFoodType = (foodType) => {
+    return new Promise((resolve, reject) => {
+        FoodTypes.deleteOne(foodType)
+            .then((foodType) => resolve(foodType))
+            .catch((err) => reject(err));
+    });
+}

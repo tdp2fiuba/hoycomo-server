@@ -141,3 +141,19 @@ exports.delete = function(store_id) {
 exports.forceDelete = function (store_id) {
     return Store.findOneAndRemove({ store_id: store_id});
 };
+
+exports.existsWithFoodType = (foodType) => {
+    return new Promise((resolve, reject) => {
+        Store.find({ foodTypes: {"$in": [foodType.description]}})
+            .then((foodType) => {
+                if (foodType.length > 0) {
+                    reject();
+                } else {
+                    resolve();
+                }
+            })
+            .catch((err) => {
+                reject(err)
+            });
+    })
+}
