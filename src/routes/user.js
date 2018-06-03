@@ -10,6 +10,9 @@ exports.assignRoutes = function (app) {
     //Update user
     app.put(apiHostBase + '/user/:user_id', user.update);
 
+    //update firebase token
+    app.put(apiHostBase + '/user/firebase', user.updateFirebaseToken);
+
     //Delete user
     app.delete(apiHostBase + '/user/:user_id',user.delete);
 

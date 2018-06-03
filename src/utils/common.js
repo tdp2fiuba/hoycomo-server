@@ -21,7 +21,7 @@ exports.config = function(config){
 exports.checkDefinedParameters = function(parameters,context){
 	for (let i = 0; i < parameters.length ; i++) {
 		if (typeof parameters[i] === "undefined"){
-			logger.error('Error on '+ context +' missing parameters, arrived -> '+ parameters);
+			console.log('Error on '+ context +' missing parameters, arrived -> '+ parameters);
 			return false;
 		}
 	}

@@ -15,10 +15,20 @@ exports.assignRoutes = function (app) {
     //update dish
     app.put(apiHostBase + '/dish/:dish_id',dish.update);
 
+    //disable dish
+    app.put(apiHostBase + '/dish/:dish_id/disable',dish.disable);
+
+    //enable dish
+    app.put(apiHostBase + '/dish/:dish_id/enable',dish.enable);
+
     //Delete dish
     app.delete(apiHostBase + '/dish/:dish_id',dish.delete);
 
-    //Read all dish, for debug
+    //DEBUG
+    //Read all dish
     app.get(apiHostBase + '/dishes', dish.searchAll);
+
+    //active all dishes
+    //app.get(apiHostBase + '/dishes/enable', dish.enableAll);
 
 };

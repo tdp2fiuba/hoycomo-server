@@ -41,7 +41,7 @@ exports.configPassport = function(passport) {
 };
 
 function generateToken(object) {
-    return jwt.sign(object, config.token_secret_key, { expiresIn: '30 days' });
+    return jwt.sign(object, config.token_secret_key, { expiresIn: '60 days' });
 }
 
 exports.generateUserToken= function(user) {

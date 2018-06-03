@@ -3,6 +3,8 @@ const Dish = require('../models/dish.js');
 const Store = require('../models/store.js');
 const common = require('../utils/common.js');
 const imageDB = require('../db/image.js');
+const beaber = require('../models/bearerAuthorization.js');
+
 let logger;
 
 exports.config = function(config){
@@ -79,6 +81,9 @@ exports.create = function (req, res) {
         .then(dish => {
             logger.info("Dish created:" + dish);
             res.status(HttpStatus.CREATED).json(Dish.dishToFront(dish));
+
+            //recalculate average price
+            Store.recalculateStoreAveragePrice(store_id);
         })
         .catch(err => {
             logger.error("Error on create dish " + err);
@@ -96,8 +101,9 @@ exports.searchByStore = function (req, res){
     const page = req.query.page || common.DEFAULT_PAGE;
     const count = req.query.count || common.DEFAULT_SIZE;
     const store_id = req.params.store_id;
+    const all = req.query.all || false;
 
-    Dish.getDishsByStore({page: page,count: count,store_id: store_id})
+    Dish.getDishsByStore({page: page,count: count,store_id: store_id,all: all})
         .then(dishes => {
             res.status(HttpStatus.OK).json(dishes.map(Dish.dishToFront));
         })
@@ -111,7 +117,7 @@ exports.searchAll = function (req, res){
     const page = req.query.page || common.DEFAULT_PAGE;
     const count = req.query.count || common.DEFAULT_SIZE;
 
-    Dish.getDishs({page: page,count: count})
+    Dish.getDishs({page: page,count: count,all:true})
         .then(dishes => {
             res.status(HttpStatus.OK).json(dishes.map(Dish.dishToFront));
         })
@@ -119,6 +125,65 @@ exports.searchAll = function (req, res){
             logger.error("Error on search dish " + err);
             res.status(HttpStatus.INTERNAL_SERVER_ERROR).json("Error al buscar los platos");
         });
+};
+
+
+function _disable(req, res,user) {
+    const id = req.params.dish_id;
+
+    if (! common.checkDefinedParameters([id],"disable dish")){
+        return common.handleError(res,{code:common.ERROR_PARAMETER_MISSING,message:"Breach of preconditios (missing parameters)"},HttpStatus.NOT_ACCEPTABLE);
+    }
+
+    if (!user.store_id) {
+        //TODO: check if dish store id is equal to this.
+        return common.handleError(res,{message:"Error de autorización"},HttpStatus.UNAUTHORIZED);
+    }
+
+    Dish.updateDish(id,{disable:true})
+        .then((dish) => {
+            res.status(HttpStatus.OK).json(Dish.dishToFront(dish));
+
+            //recalculate average price
+            Store.recalculateStoreAveragePrice(dish.store_id);
+        })
+        .catch(err => {
+            console.log("Error on disable dish " + err);
+            return common.handleError(res,{message:"Error al desactivar el plato"},HttpStatus.INTERNAL_SERVER_ERROR);
+        });
+}
+
+function _enable(req, res, user) {
+    const id = req.params.dish_id;
+
+    if (! common.checkDefinedParameters([id],"enable dish")){
+        return common.handleError(res,{code:common.ERROR_PARAMETER_MISSING,message:"Breach of preconditios (missing parameters)"},HttpStatus.NOT_ACCEPTABLE);
+    }
+
+    if (!user.store_id) {
+        //TODO: check if dish store id is equal to this.
+        return common.handleError(res,{message:"Error de autorización"},HttpStatus.UNAUTHORIZED);
+    }
+
+    Dish.updateDish(id,{disable:false})
+        .then((dish) => {
+            res.status(HttpStatus.OK).json(Dish.dishToFront(dish));
+
+            //recalculate average price
+            Store.recalculateStoreAveragePrice(dish.store_id);
+        })
+        .catch(err => {
+            console.log("Error on enable dish " + err);
+            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json("Error al activar el plato");
+        });
+}
+
+exports.disable = function(req,res){
+    beaber.authorization(req, res, _disable);
+};
+
+exports.enable = function(req,res){
+    beaber.authorization(req, res, _enable);
 };
 
 exports.update = function (req, res) {
@@ -132,6 +197,9 @@ exports.update = function (req, res) {
     Dish.updateDish(id,data)
         .then((dish) => {
             res.status(HttpStatus.OK).json(Dish.dishToFront(dish));
+
+            //recalculate average price
+            Store.recalculateStoreAveragePrice(dish.store_id);
         })
         .catch(err => {
             logger.error("Error on update dish " + err);
@@ -150,9 +218,23 @@ exports.delete = function (req, res) {
     Dish.delete(id)
         .then(() => {
             res.status(HttpStatus.OK).json("Plato eliminado");
+
+            //recalculate average price
+            Store.recalculateStoreAveragePrice(dish.store_id);
         })
         .catch(err => {
-            logger.error("Error on delete dish " + err);
+            console.log("Error on delete dish " + err);
             res.status(HttpStatus.INTERNAL_SERVER_ERROR).json("Error al eliminar el plato");
+        });
+};
+
+exports.enableAll = function (req, res) {
+    Dish.enableAll()
+        .then(() => {
+            res.status(HttpStatus.OK).json("Platos activados");
+        })
+        .catch(err => {
+            console.log("Error on active dish " + err);
+            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json("Error al activar los platos");
         });
 };

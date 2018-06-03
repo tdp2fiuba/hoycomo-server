@@ -1,4 +1,7 @@
 const storeDB = require('../db/store.js');
+const Review = require('../models/review.js');
+const Dish = require('../models/dish.js');
+const Order = require('../models/order.js');
 const common = require('../utils/common.js');
 
 function storeToFront(store) {
@@ -174,6 +177,94 @@ exports.findStoreByLogin = function(login) {
 
 exports.findStoreByID = function(store_id) {
     return storeDB.getStoreById(store_id);
+};
+
+exports.recalculateStoreRating = function (store_id){
+    if (!store_id) {
+        console.log("Error on recalculate store rating, missing store id");
+    }
+
+    storeDB.getStoreById(store_id)
+        .then(store => {
+            //buscar reviews y calcular el rating
+            Review.getReviewByStoreId(store_id,{all:1})
+            .then(reviews => {
+                if (!reviews || reviews.length <= 0) return;
+
+                let rating_sum = 0;
+                reviews.forEach(review => {
+                    rating_sum += parseFloat(review.rating);
+                });
+
+                store.rating = rating_sum / reviews.length;
+                store.save();
+            })
+        })
+        .catch(err => {
+            console.log("Error on recalculate store rating, " + err);
+        })
+};
+
+exports.recalculateStoreAveragePrice = function (store_id){
+    if (!store_id) {
+        console.log("Error on recalculate average price, missing store id");
+    }
+
+    storeDB.getStoreById(store_id)
+        .then(store => {
+            //buscar dishes y calcular el promedio
+            Dish.getDishsByStore({page: 0,count: 1000,store_id: store_id})
+                .then(dishes => {
+                    if (!dishes || dishes.length <= 0) return;
+
+                    let price_sum = 0;
+                    dishes.forEach(dish => {
+                        price_sum += parseFloat(dish.price);
+                    });
+
+                    store.average_price = price_sum / dishes.length;
+                    store.save();
+                })
+        })
+        .catch(err => {
+            console.log("Error on recalculate average price " + err);
+        })
+};
+
+exports.recalculateStoreDelayTime = function (store_id){
+    if (!store_id) {
+        console.log("Error on recalculate delay time, missing store id");
+    }
+
+    storeDB.getStoreById(store_id)
+        .then(store => {
+            //buscar orders y calcular el promedio
+            Order.getOrders({store_id: store_id,'state.state': 'DELIVERED'})
+                .then(orders => {
+                    if (!orders || orders.length <= 0) return;
+
+                    let delay_seconds = 0;
+                    orders.forEach(order => {
+                        const states = order.states;
+                        let taken_timestamp;
+                        let delivered_timestamp;
+                        states.forEach(state => {
+                            if (state.state == 'TAKEN')
+                                taken_timestamp = (new Date(state.timestamp)).getTime() / 1000;
+                            else if (state.state == 'DELIVERED')
+                                delivered_timestamp = (new Date(state.timestamp)).getTime() / 1000;
+                        });
+                        if (delivered_timestamp  && taken_timestamp)
+                            delay_seconds += delivered_timestamp - taken_timestamp;
+                    });
+
+                    store.delay_time = delay_seconds / orders.length;
+                    store.save();
+                })
+        })
+        .catch(err => {
+            console.log("Error on recalculate average price " + err);
+        })
 };
 
 exports.deleteAll = function () {

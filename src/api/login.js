@@ -58,6 +58,7 @@ exports.loginUser = function (req, res, next) {
                 if (user.firebase_token !== req.body.firebase_token){
                     User.updateUser(user.user_id,{firebase_token: req.body.firebase_token})
                     .then(user => {
+                        console.log("firebase token update for user:" + user.user_id);
                         resolve(user);
                     })
                     .catch(err => {

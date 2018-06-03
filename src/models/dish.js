@@ -13,7 +13,8 @@ function dishToFront(dish) {
         diabetic: dish.diabetic,
         vegan: dish.vegan,
         vegetarian: dish.vegetarian,
-        celiac: dish.celiac
+        celiac: dish.celiac,
+        disable: dish.disable ? true : undefined
     }
 }
 
@@ -41,16 +42,13 @@ exports.createDish = function(dish_data) {
 };
 
 exports.updateDish = function(dish_id,dish_data) {
-    return new Promise(function(resolve, reject) {
-        if (!dish_id || !dish_data) {
-            reject('Missing parameters');
-            return;
-        }
+    if (!dish_id || !dish_data) {
+        return Promise.reject('Missing parameters');
+    }
 
-        //TODO: VALIDATE DATA
+    //TODO: VALIDATE DATA
 
-        return dishDB.updateDish(dish_id,dish_data);
-    });
+    return dishDB.updateDish(dish_id,dish_data);
 };
 
 exports.updateDishPictures = function (dish,pictures) {
@@ -135,4 +133,15 @@ exports.delete = function(id) {
                 reject("Error al eliminar el plato.");
             });
     });
+};
+
+exports.enableAll = function() {
+    return dishDB.Dish.update({},{disable:false},{multi: true})
+            .then(() => {
+                return Promise.resolve(true);
+            })
+            .catch(err => {
+                console.log(err);
+                return Promise.reject("Error al activar todos plato.");
+            });
 };

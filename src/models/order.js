@@ -3,13 +3,15 @@ const Dish = require('../models/dish.js');
 const Store = require('../models/store.js');
 const User = require('../models/user.js');
 
-function stateToFront(states) {
-    const lastState = states[states.length - 1];
+function lastState(order){
+    let lastState;
+    order.states.forEach(function (state) {
+        if (!lastState || Date(state.timestamp) >= Date(lastState.timestamp)){
+            lastState = {state: state.state, timestamp: state.timestamp};
+        }
+    });
 
-    return {
-        name: lastState.state,
-        timestamp: lastState.timestamp
-    };
+    return lastState;
 }
 
 function orderToFront(order) {
@@ -19,18 +21,53 @@ function orderToFront(order) {
         price : order.price,
         items: order.items,
         discount : order.discount || 0,
-        states : order.states,
+        states : [],
         description: order.description,
         register_timestamp : order.register_timestamp,
         address: order.address
     };
+
+    if (order.states.length <= 0) {
+        order.states = { state: 'TAKEN', timestamp: order.register_timestamp};
+    }
+
+    let lastState;
+    order.states.forEach(function (state) {
+        if (!lastState || Date(state.timestamp) >= Date(lastState.timestamp)){
+            lastState = {state: state.state, timestamp: state.timestamp};
+        }
+        _order.states.push({state: state.state, timestamp: state.timestamp});
+    });    
+
+    _order.state = lastState;
+
     const dishes_id = [];
     order.items.forEach(function (item) {
         dishes_id.push(item.id);
     });
     return Dish.getDishByIDs(dishes_id)
     .then( dishes => {
-        _order.dishes = dishes.map(Dish.dishToFront);
+        const _dishes = {};//dishes.map(Dish.dishToFront);
+        dishes.forEach(function (dish) {
+            _dishes[dish.dish_id] = Dish.dishToFront(dish);
+        });
+
+        _order.dishes = _dishes;
+
+        const _items = [];
+        order.items.forEach(function (item) {
+            let dish = _dishes[item.id];
+            let _item = {};
+            _item.id = item.id;
+            _item.comments = item.comments;
+            _item.quantity = item.quantity;
+            _item.garnish = item.garnish;
+            _item.price = dish.price;
+            _item.name = dish.name;
+            _items.push(_item);
+        });
+        _order.items = _items;
+
         return Promise.resolve(_order);
     })
     .then(_order => {
@@ -57,6 +94,7 @@ function orderToFront(order) {
 
 }
 
+exports.lastState = lastState;
 exports.orderToFront = orderToFront;
 
 exports.createOrder = function(data) {
@@ -107,16 +145,16 @@ exports.getOrderByStoreId= function(id) {
     return orderDB.getOrderByStore(id);
 };
 
-exports.getOrderByUserId = function(id) {
-    if (!id) {
-        return Promise.reject('Missing Store ID');
+exports.getOrderByUserId = function(data) {
+    if (!data.user_id) {
+        return Promise.reject('Missing User ID');
     }
 
-    return orderDB.getOrderByUser(id);
+    return orderDB.getOrderByUser(data.user_id,data);
 };
 
-exports.getOrders = function() {
-    return orderDB.getOrders();
+exports.getOrders = function(data) {
+    return orderDB.getOrders(data);
 };
 
 exports.deleteById = function (id) {

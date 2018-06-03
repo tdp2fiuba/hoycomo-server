@@ -16,6 +16,7 @@ const dishSchema = new Schema({
     vegan: { type: Boolean, default: false },
     vegetarian: { type: Boolean, default: false },
     celiac: { type: Boolean, default: false },
+    disable: {type: Boolean, default: false},
     register_timestamp : { type: Date, default: Date.now },
     last_edit_timestamp : { type: Date, default: Date.now }
 });
@@ -61,26 +62,28 @@ exports.getDishById = function(dish_id) {
     })
 };
 
-exports.getDishByIds = function(dish_ids) {
-    return Dish.find({dish_id : {$in: dish_ids}});
-};
+exports.getDishByIds = function(dish_ids,data) {
+    const find_data = {dish_id : {$in: dish_ids}};
+    if (!data || (data && !data.all)){
+        find_data.disable = false;
+    }
 
-/*
-exports.getDishByIds = function(dish_ids,cb) {
-    Dish.find({dish_id : {$in: dish_ids}},function (err,dishes) {
-        if (err){
-            cb("Error interno al buscar los platos");
-        }
-        cb(null,dishes);
-    });
+    return Dish.find(find_data)
+        //.skip(data.page*data.count)
+        //.limit(parseInt(data.count))
+        .sort({register_timestamp: 'asc'});
 };
-*/
 
 exports.getDishByStore = function(data) {
     return new Promise(function(resolve, reject) {
-        Dish.find({store_id: data.store_id})
-            .skip(data.page*data.count)
-            .limit(parseInt(data.count))
+        const find_data = {store_id: data.store_id};
+        if (!data.all){
+            find_data.disable = false;
+        }
+
+        Dish.find(find_data)
+            //.skip(data.page*data.count)
+            //.limit(parseInt(data.count))
             .sort({register_timestamp: 'asc'})
             .then(dishes => {
                 resolve(dishes);
@@ -94,9 +97,13 @@ exports.getDishByStore = function(data) {
 
 exports.getDishs = function(data) {
     return new Promise(function(resolve, reject) {
-        Dish.find()
-            .skip(data.page*data.count)
-            .limit(parseInt(data.count))
+        const find_data = {};
+        if (!data.all){
+            find_data.disable = false;
+        }
+        Dish.find(find_data)
+            //.skip(data.page*data.count)
+            //.limit(parseInt(data.count))
             .sort({register_timestamp: 'asc'})
             .then(dishes => {
                 resolve(dishes);

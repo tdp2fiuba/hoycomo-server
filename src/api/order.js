@@ -95,15 +95,10 @@ function _create(req, res, user) {
             logger.info("Order created:" + order);
             //TODO: UPDATE ADDRESS AL USUARIO, si es la primera como la defautl si no en other_address
 
-            //Enviar email al comercio.
-            mailing.sendHTMLMail(data.store.email,"Nuevo pedido", "<p>Nuevo pedido:</p>");
-
-            //Enviar notificaciones push desp de 10 seg
-            //setTimeout(function () {
-            //    firebase.sendNotification(user.firebase_token,"Tu pedido se está preparando!", "");
-            //},10000);
-
-            res.status(HttpStatus.CREATED).json(Order.orderToFront(order));
+            Order.orderToFront(order)
+                .then( order => {
+                    res.status(HttpStatus.CREATED).json(order);
+                })
         })
         .catch(err => {
             logger.error("Error on create order " + err);
@@ -141,7 +136,7 @@ function _read(req, res, user) {
                     res.status(HttpStatus.OK).json(order);
                 })
             } else {
-                return common.handleError(res,{message:"Order non exists"},HttpStatus.NO_CONTENT);
+                return common.handleError(res,{message:"Order non exists"},HttpStatus.NOT_FOUND);
             }
         })
         .catch(err => {
@@ -154,11 +149,11 @@ exports.read = function (req, res) {
 };
 
 //Por el momento solo actualiza el estado
-function update(req,res,user){
+function _update(req,res,user){
     const id = req.params.order_id;
-    const state = req.body.state.toUpperCase();
+    const state = req.body.state ? req.body.state.toUpperCase() : null;
 
-    if (! common.checkDefinedParameters([id],"update order")){
+    if (! common.checkDefinedParameters([id,state],"update order")){
         return common.handleError(res,{code:common.ERROR_PARAMETER_MISSING,message:"Breach of preconditios (missing parameters)"},HttpStatus.NOT_ACCEPTABLE);
     }
 
@@ -171,42 +166,34 @@ function update(req,res,user){
                 return common.handleError(res,{message:"Error de autorización"},HttpStatus.UNAUTHORIZED);
             }
 
-            if (order.state.state === state){
-                return common.handleError(res,{message:"Ese estado es el actual"},HttpStatus.NO_CONTENT);
+            if (Order.lastState(order).state === state){
+                return common.handleError(res,{message:"Ese estado es el actual"},HttpStatus.NOT_FOUND);
             }
 
             if (!Order.validateState(state)){
-                return common.handleError(res,{message:"Estado inválido"},HttpStatus.NO_CONTENT);
+                return common.handleError(res,{message:"Estado inválido"},HttpStatus.NOT_FOUND);
             }
 
             Order.updateOrderState(id,state)
                 .then(order => {
                     User.getUserByID(order.user_id)
                     .then(orderUser => {
-                        let title = "";
-                        let text = "";
-                        switch(state) {
-                            case 'PREPARATION':
-                                title = "Tu pedido se está preparando!";
-                                text = "";
-                                break;
-                            case 'DISPATCHED':
-                                title = "Tu pedido está en camino! 🛵";
-                                text = "";
-                                break;
-                            case 'DELIVERED':
-                                title = "Pedido entregado, gracias por confiar en nosotros";
-                                text = "";
-                                break;
-                            case 'CANCELLED':
-                                title = "Tu pedido fue cancelado por el comercio";
-                                text = "";
-                                break;
+                        if (state =='DELIVERED') {
+                            const data = {
+                                topic: "DELIVERED",
+                                storeId: order.store_id.toString() ,
+                                orderId: order.order_id.toString()
+                            };
+                            firebase.sendNotification(orderUser.firebase_token,"Pedido entregado 🛵","Gracias por confiar en HoyComo!",data);
+                            Store.recalculateStoreDelayTime(order.store_id);
+                        } else if (state =='CANCELLED') {
+                            firebase.sendNotification(orderUser.firebase_token,"Tu pedido fue cancelado por el comercio 😔","Contactate con el comercio para saber los motivos");
                         }
-
-                        firebase.sendNotification(orderUser.firebase_token,title,text);
                     });
-                    res.status(HttpStatus.OK).json(Order.orderToFront(order));
+                    Order.orderToFront(order)
+                        .then(_order => {
+                            res.status(HttpStatus.OK).json(_order);
+                        });
                 })
                 .catch(err => {
                     logger.error("Error on update order " + err);
@@ -214,17 +201,17 @@ function update(req,res,user){
                 });
 
         } else {
-            return common.handleError(res,{message:"Order non exists"},HttpStatus.NO_CONTENT);
+            return common.handleError(res,{message:"El pedido no existe"},HttpStatus.NOT_FOUND);
         }
     })
     .catch(err => {
         console.log(err);
-        return common.handleError(res,{message:"Error on read order"},HttpStatus.INTERNAL_SERVER_ERROR);
+        return common.handleError(res,{message:"Error interno."},HttpStatus.INTERNAL_SERVER_ERROR);
     });
 }
 
 exports.update = function (req, res) {
-    beaber.authorization(req, res, update);
+    beaber.authorization(req, res, _update);
 };
 
 function _searchByStore(req, res, user){
@@ -236,12 +223,12 @@ function _searchByStore(req, res, user){
         return common.handleError(res,{message:"Error de autorización"},HttpStatus.UNAUTHORIZED);
     }
 
-    Order.getOrderByStoreId(store_id)//{page: page,count: count,store_id: store_id})
+    Order.getOrderByStoreId(store_id)
     .then(orders => {
         const promises = orders.map(Order.orderToFront);
         Promise.all(promises).then( orders => {
             res.status(HttpStatus.OK).json(orders);
-        })
+        });
     })
     .catch(err => {
         console.log("Error on search order " + err);
@@ -257,12 +244,13 @@ function _searchByUser(req, res, user){
     //const page = req.query.page || common.DEFAULT_PAGE;
     //const count = req.query.count || common.DEFAULT_SIZE;
     const user_id = req.params.user_id;
+    let state = req.query.state;
 
     if (user.user_id && (user.user_id != user_id)){
         return common.handleError(res,{message:"Error de autorización"},HttpStatus.UNAUTHORIZED);
     }
 
-    Order.getOrderByUserId(user_id)//{page: page,count: count,user_id: user_id})
+    Order.getOrderByUserId({user_id:user_id,state: state})//{page: page,count: count,user_id: user_id})
         .then(orders => {
             const promises = orders.map(Order.orderToFront);
             Promise.all(promises).then( orders => {
@@ -291,4 +279,48 @@ exports.search = function (req, res) {
             logger.error("Error on search orders " + err);
             return common.handleError(res,{message:"Error al buscar los pedidos"},HttpStatus.INTERNAL_SERVER_ERROR);
         });
+};
+
+function _reject(req, res, user){
+    const order_id = req.params.order_id;
+
+    if (! common.checkDefinedParameters([order_id],"reject order")){
+        return common.handleError(res,{code:common.ERROR_PARAMETER_MISSING,message:"Id del pedido es necesario"},HttpStatus.BAD_REQUEST);
+    }
+
+    Order.getOrderById(order_id)
+    .then(order => {
+        if (!order){
+            return common.handleError(res,{message:"Pedido inexistente"},HttpStatus.NOT_FOUND);
+        }
+
+        if (user.user_id && (order.user_id != user.user_id)){
+            return common.handleError(res,{message:"Error de autorización"},HttpStatus.UNAUTHORIZED);
+        }
+
+        if (Order.lastState(order).state !== 'DELIVERED'){
+            return common.handleError(res,{message:"Error de autorización, el pedido no fue entregado"},HttpStatus.UNAUTHORIZED);
+        }
+
+        Order.updateOrderState(order_id,'DISPATCHED')
+        .then(order => {
+            Order.orderToFront(order)
+            .then(order => {
+                //Envio email avisando al comercio que el cliente rechazó el pedido
+                mailing.sendHTMLMail(order.store.email,"El cliente " + order.user.first_name + " " + order.user.last_name + " rechazó el pedido que marcaste como entregado", "<p><strong>"+ order.store.name +"</strong></p><p><strong>" + order.user.first_name + " " + order.user.last_name + "</strong> rechazó el pedido <strong>"+ order.id +"</strong> el cual marcaste como entregado.</p>");
+
+                res.status(HttpStatus.OK).json(order);
+
+                Store.recalculateStoreDelayTime(order.store_id);
+            });
+        });
+    })
+    .catch(err => {
+        console.log("Error on reject order " + err);
+        return common.handleError(res,{message:"Error al interno :"},HttpStatus.INTERNAL_SERVER_ERROR);
+    });
+}
+
+exports.reject = function (req, res){
+    beaber.authorization(req, res, _reject);
 };
