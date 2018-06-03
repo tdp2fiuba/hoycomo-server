@@ -7,4 +7,10 @@ exports.assignRoutes = (app) => {
 
     // Get all food types
     app.get(apiHostBase + "/foodTypes", FoodTypes.getAll);
+
+    // Add new food type
+    app.post(apiHostBase + "/foodTypes", FoodTypes.addFoodType);
+
+    // Deletes one food type
+    app.delete(apiHostBase + "/foodTypes", FoodTypes.deleteFoodType);
 }

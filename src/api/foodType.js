@@ -20,3 +20,25 @@ exports.getAll = (req, res) => {
             res.status(HttpStatus.INTERNAL_SERVER_ERROR).json("Error al obtener tipos de comida");
         })
 };
+
+exports.addFoodType = (req, res) => {
+    FoodTypes.addFoodType({ description: req.body.description })
+        .then((foodType) => {
+            res.status(HttpStatus.OK).json(foodType);
+        })
+        .catch((err) => {
+            console.log(err);
+            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json("Error al insertar tipo de comida");
+        })
+}
+
+exports.deleteFoodType = (req, res) => {
+    FoodTypes.deleteFoodType({ description: req.body.description })
+        .then((foodType) => {
+            res.status(HttpStatus.OK).json(foodType);
+        })
+        .catch((err) => {
+            console.log(err);
+            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: err.message });
+        })
+}
