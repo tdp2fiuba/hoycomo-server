@@ -63,7 +63,7 @@ exports.buildFindStoreQuery = function (filters) {
                     break;
                 case "delayTime":
                     match.$match.delay_time = {
-                        $lte: filters.delayTime
+                        $lte: filters.delayTime * 60
                     }; 
                     break;
                 case "rating":

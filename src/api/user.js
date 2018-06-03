@@ -42,7 +42,7 @@ exports.read = function (req, res) {
         });
 };
 
-function update(req,res,user){
+function _update(req,res,user){
     const id = req.params.user_id;
     const data_update = {};
 
@@ -103,7 +103,7 @@ function update(req,res,user){
 
 
 exports.update = function (req, res) {
-    beaber.authorization(req, res, update);
+    beaber.authorization(req, res, _update);
 };
 
 function updateFirebaseToken(req,res,user){
