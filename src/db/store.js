@@ -112,6 +112,11 @@ exports.getStores = function(data) {
     })
 };
 
+exports.getAllStores = function(data) {
+    return Store.aggregate(dbTools.buildFindStoreQuery(data.filters))
+            .sort({register_timestamp: 'asc'});
+};
+
 exports.updateStore = function(store_id,data) {
     return Store.findOneAndUpdate({store_id : store_id},data,{new: true});
 };

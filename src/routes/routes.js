@@ -7,6 +7,7 @@ const foodTypesRoutes = require('./foodType.js');
 const userRoutes = require('./user.js');
 const orderRoutes = require('./order.js');
 const reviewRoutes = require('./review.js');
+const statsRoutes = require('./stats.js');
 
 exports.assignRoutes = function (app) {
 
@@ -27,4 +28,6 @@ exports.assignRoutes = function (app) {
     orderRoutes.assignRoutes(app);
 
     reviewRoutes.assignRoutes(app);
+
+    statsRoutes.assignRoutes(app);
 };

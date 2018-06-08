@@ -120,20 +120,13 @@ exports.getStoreByID = function(store_id) {
 
 //get list of stores
 exports.getStores = function(data) {
-  return new Promise(function(resolve, reject) {
-      if (data.page === 'undefined' || (data.page < 0) || !data.count) {
-            reject('Missing page or count in search store');
-            return;
-      }
-      storeDB.getStores(data)
-        .then(stores => {
-            resolve(stores);
-        })
-        .catch(err => {
-
-            reject(err);
-        })
-    });
+  if (data.all){
+      return storeDB.getAllStores(data);
+  }
+  if (data.page === 'undefined' || (data.page < 0) || !data.count) {
+        return Promise.reject('Missing page or count in search store');
+  }
+  return storeDB.getStores(data);
 };
 
 exports.getStoreByLogin = function(login) {
