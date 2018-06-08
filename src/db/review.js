@@ -27,7 +27,8 @@ exports.getReviewsByStore = function(store_id,data) {
     if (!data || !data.all) {
         data_find.body = { $ne: null }
     }
-    return Review.find(data_find);
+    return Review.find(data_find)
+        .sort({timestamp: 'desc'});
 };
 
 exports.getReviewsByUser = function(user_id) {

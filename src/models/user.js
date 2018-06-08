@@ -36,6 +36,13 @@ exports.updateUser = function(user_id,user_data) {
     return userDB.updateUser(user_id,user_data);
 };
 
+exports.updateUserAddress = function(user_id,address) {
+    if (!user_id || !address || !address.name || !address.lat || !address.lon) {
+        return Promise.reject('Missing parameters');
+    }
+    return userDB.updateUser(user_id,{address: address});
+};
+
 exports.deleteById = function (id) {
     return userDB.delete(id);
 };
