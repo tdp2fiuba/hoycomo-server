@@ -74,7 +74,7 @@ exports.getDishByIds = function(dish_ids,data) {
         .sort({register_timestamp: 'asc'});
 };
 
-exports.getDishByStore = function(data) {
+exports.getDishesByStore = function(data) {
     return new Promise(function(resolve, reject) {
         const find_data = {store_id: data.store_id};
         if (!data.all){
@@ -95,7 +95,7 @@ exports.getDishByStore = function(data) {
     })
 };
 
-exports.getDishs = function(data) {
+exports.getDishes = function(data) {
     return new Promise(function(resolve, reject) {
         const find_data = {};
         if (!data.all){

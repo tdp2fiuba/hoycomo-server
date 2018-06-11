@@ -104,7 +104,7 @@ exports.searchByStore = function (req, res){
     const store_id = req.params.store_id;
     const all = req.query.all || false;
 
-    Dish.getDishsByStore({page: page,count: count,store_id: store_id,all: all})
+    Dish.getDishesByStore({page: page,count: count,store_id: store_id,all: all})
         .then(dishes => {
             res.status(HttpStatus.OK).json(dishes.map(Dish.dishToFront));
         })
@@ -118,7 +118,7 @@ exports.searchAll = function (req, res){
     const page = req.query.page || common.DEFAULT_PAGE;
     const count = req.query.count || common.DEFAULT_SIZE;
 
-    Dish.getDishs({page: page,count: count,all:true})
+    Dish.getDishes({page: page,count: count,all:true})
         .then(dishes => {
             res.status(HttpStatus.OK).json(dishes.map(Dish.dishToFront));
         })

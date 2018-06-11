@@ -212,7 +212,7 @@ exports.recalculateStoreAveragePrice = function (store_id){
     storeDB.getStoreById(store_id)
         .then(store => {
             //buscar dishes y calcular el promedio
-            Dish.getDishsByStore({page: 0,count: 1000,store_id: store_id})
+            Dish.getDishesByStore({page: 0,count: 1000,store_id: store_id})
                 .then(dishes => {
                     if (!dishes || dishes.length <= 0) return;
 
@@ -267,7 +267,7 @@ exports.recalculateStoreMaxDiscount = function (store_id) {
     let maxDiscount = 0;
     storeDB.getStoreById(store_id)
         .then(store => {
-            Dish.getDishsByStore(getDishesData)
+            Dish.getDishesByStore(getDishesData)
                 .then(dishes => {
                     maxDiscount = dishes && dishes.length > 0 ? Math.max.apply(Math, dishes.map(d => d.discount).filter(n => n && n > 0)) : 0;
                     store.max_discount = store.discount + maxDiscount;
