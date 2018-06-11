@@ -8,4 +8,7 @@ exports.assignRoutes = function (app) {
     //Billing
     app.get(apiHostBase + '/stats/billing',stats.getBilling);
 
+    //Fee
+    app.get(apiHostBase + '/stats/fee',stats.getFee);
+
 };
