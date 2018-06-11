@@ -84,6 +84,7 @@ exports.create = function (req, res) {
 
             //recalculate average price
             Store.recalculateStoreAveragePrice(store_id);
+            Store.recalculateStoreMaxDiscount(store_id);
         })
         .catch(err => {
             logger.error("Error on create dish " + err);
@@ -146,6 +147,7 @@ function _disable(req, res,user) {
 
             //recalculate average price
             Store.recalculateStoreAveragePrice(dish.store_id);
+            Store.recalculateStoreMaxDiscount(dish.store_id);
         })
         .catch(err => {
             console.log("Error on disable dish " + err);
@@ -171,6 +173,7 @@ function _enable(req, res, user) {
 
             //recalculate average price
             Store.recalculateStoreAveragePrice(dish.store_id);
+            Store.recalculateStoreMaxDiscount(dish.store_id);
         })
         .catch(err => {
             console.log("Error on enable dish " + err);
@@ -200,6 +203,7 @@ exports.update = function (req, res) {
 
             //recalculate average price
             Store.recalculateStoreAveragePrice(dish.store_id);
+            Store.recalculateStoreMaxDiscount(dish.store_id);
         })
         .catch(err => {
             logger.error("Error on update dish " + err);
@@ -221,6 +225,7 @@ exports.delete = function (req, res) {
 
             //recalculate average price
             Store.recalculateStoreAveragePrice(dish.store_id);
+            Store.recalculateStoreMaxDiscount(dish.store_id);
         })
         .catch(err => {
             console.log("Error on delete dish " + err);

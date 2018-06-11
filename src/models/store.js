@@ -50,7 +50,8 @@ function storeToFront(store) {
         avatar: store.avatar ? store.avatar : common.apiBaseURL() + '/images' + '/avatar_default.jpg',
         delay_time: store.delay_time,
         availability: store.availability ? store.availability : mockAvailability,
-        discount: store.discount
+        discount: store.discount,
+        max_discount: store.max_discount
     }
 
 
@@ -70,6 +71,8 @@ exports.createStore = function(store_data) {
         }
         
         //append data
+        if (store_data.discount)
+            store_data.max_discount = store_data.discount;
 
         storeDB.saveStore(store_data)
             .then(store => {
@@ -253,6 +256,26 @@ exports.recalculateStoreDelayTime = function (store_id){
         .catch(err => {
             console.log("Error on recalculate average price " + err);
         })
+};
+
+exports.recalculateStoreMaxDiscount = function (store_id) {
+    let getDishesData = {
+        page: 0,
+        count: 200,
+        store_id: store_id
+    };
+    let maxDiscount = 0;
+    storeDB.getStoreById(store_id)
+        .then(store => {
+            Dish.getDishsByStore(getDishesData)
+                .then(dishes => {
+                    maxDiscount = dishes && dishes.length > 0 ? Math.max.apply(Math, dishes.map(d => d.discount).filter(n => n && n > 0)) : 0;
+                    store.max_discount = store.discount + maxDiscount;
+                    store.save();
+                })
+        }).catch(err => {
+            console.error("Error on recalculate store max discount " + err);
+        });
 };
 
 exports.deleteAll = function () {
