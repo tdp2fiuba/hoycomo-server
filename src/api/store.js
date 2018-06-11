@@ -189,6 +189,8 @@ function _updateDiscount(req,res,user){
     Store.updateStore(store_id,{ discount: discount })
         .then(store => {
             res.status(HttpStatus.OK).json(Store.storeToFront(store));
+
+            Store.recalculateStoreMaxDiscount(store_id);
         })
         .catch(err => {
             logger.error("Error on update discount store " + err);

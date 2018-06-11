@@ -84,6 +84,7 @@ exports.create = function (req, res) {
 
             //recalculate average price
             Store.recalculateStoreAveragePrice(store_id);
+            Store.recalculateStoreMaxDiscount(store_id);
         })
         .catch(err => {
             logger.error("Error on create dish " + err);
@@ -103,7 +104,7 @@ exports.searchByStore = function (req, res){
     const store_id = req.params.store_id;
     const all = req.query.all || false;
 
-    Dish.getDishsByStore({page: page,count: count,store_id: store_id,all: all})
+    Dish.getDishesByStore({page: page,count: count,store_id: store_id,all: all})
         .then(dishes => {
             res.status(HttpStatus.OK).json(dishes.map(Dish.dishToFront));
         })
@@ -117,7 +118,7 @@ exports.searchAll = function (req, res){
     const page = req.query.page || common.DEFAULT_PAGE;
     const count = req.query.count || common.DEFAULT_SIZE;
 
-    Dish.getDishs({page: page,count: count,all:true})
+    Dish.getDishes({page: page,count: count,all:true})
         .then(dishes => {
             res.status(HttpStatus.OK).json(dishes.map(Dish.dishToFront));
         })
@@ -146,6 +147,7 @@ function _disable(req, res,user) {
 
             //recalculate average price
             Store.recalculateStoreAveragePrice(dish.store_id);
+            Store.recalculateStoreMaxDiscount(dish.store_id);
         })
         .catch(err => {
             console.log("Error on disable dish " + err);
@@ -171,6 +173,7 @@ function _enable(req, res, user) {
 
             //recalculate average price
             Store.recalculateStoreAveragePrice(dish.store_id);
+            Store.recalculateStoreMaxDiscount(dish.store_id);
         })
         .catch(err => {
             console.log("Error on enable dish " + err);
@@ -200,6 +203,7 @@ exports.update = function (req, res) {
 
             //recalculate average price
             Store.recalculateStoreAveragePrice(dish.store_id);
+            Store.recalculateStoreMaxDiscount(dish.store_id);
         })
         .catch(err => {
             logger.error("Error on update dish " + err);
@@ -221,6 +225,7 @@ exports.delete = function (req, res) {
 
             //recalculate average price
             Store.recalculateStoreAveragePrice(dish.store_id);
+            Store.recalculateStoreMaxDiscount(dish.store_id);
         })
         .catch(err => {
             console.log("Error on delete dish " + err);

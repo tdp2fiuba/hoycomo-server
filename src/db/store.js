@@ -56,7 +56,8 @@ const storeSchema = new Schema({
           end_time: {type: String}
         }
     },
-    discount: {type: Number, default: 0}
+    discount: {type: Number, default: 0},
+    max_discount: {type: Number, default: 0}
 });
 
 storeSchema.plugin(AutoIncrement, {inc_field: 'store_id'});

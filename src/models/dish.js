@@ -80,14 +80,14 @@ exports.getDishByIDs = function(dish_ids) {
     return dishDB.getDishByIds(dish_ids);
 };
 
-exports.getDishsByStore = function(data) {
+exports.getDishesByStore = function(data) {
     return new Promise(function(resolve, reject) {
         if (data.page === 'undefined' || (data.page < 0) || !data.count || !data.store_id) {
             reject('Missing page or count in search dish');
             return;
         }
 
-        dishDB.getDishByStore(data)
+        dishDB.getDishesByStore(data)
             .then(dish => {
                 resolve(dish);
             })
@@ -99,14 +99,14 @@ exports.getDishsByStore = function(data) {
 };
 
 
-exports.getDishs = function(data) {
+exports.getDishes = function(data) {
     return new Promise(function(resolve, reject) {
         if (data.page === 'undefined' || (data.page < 0) || !data.count) {
             reject('Missing page or count in search dish');
             return;
         }
 
-        dishDB.getDishs(data)
+        dishDB.getDishes(data)
             .then(dish => {
                 resolve(dish);
             })
