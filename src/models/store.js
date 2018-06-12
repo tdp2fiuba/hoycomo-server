@@ -269,7 +269,8 @@ exports.recalculateStoreMaxDiscount = function (store_id) {
         .then(store => {
             Dish.getDishesByStore(getDishesData)
                 .then(dishes => {
-                    maxDiscount = dishes && dishes.length > 0 ? Math.max.apply(Math, dishes.map(d => d.discount).filter(n => n && n > 0)) : 0;
+                    maxDiscount = dishes && dishes.length > 0 ?
+                        Math.max.apply(Math, (dishes.map(d => d.discount).filter(n => n && n > 0) || 0)) : 0;
                     store.max_discount = (store.discount || 0) + maxDiscount;
                     store.save();
                 })
