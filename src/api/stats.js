@@ -115,7 +115,7 @@ function getOrdersPerDay(req, res, user) {
         const days = [];
         while (_date.getTime() <= _end){
 
-            days.push({day:_date.toLocaleDateString(),orders: (ordersPerDay[_date.toLocaleDateString()] || 0)});
+            days.push({day:_date.toLocaleDateString('es-ar'),orders: (ordersPerDay[_date.toLocaleDateString()] || 0)});
 
             _date.setDate(_date.getDate() + 1);
         }
