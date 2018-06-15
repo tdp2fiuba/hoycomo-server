@@ -11,4 +11,6 @@ exports.assignRoutes = function (app) {
     //Fee
     app.get(apiHostBase + '/stats/fee',stats.getFee);
 
+    app.get(apiHostBase + '/stats/orders',stats.getOrders);
+
 };
