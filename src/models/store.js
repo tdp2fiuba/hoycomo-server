@@ -259,18 +259,20 @@ exports.recalculateStoreDelayTime = function (store_id){
 };
 
 exports.recalculateStoreMaxDiscount = function (store_id) {
-    let getDishesData = {
-        page: 0,
-        count: 200,
-        store_id: store_id
-    };
-    let maxDiscount = 0;
     storeDB.getStoreById(store_id)
         .then(store => {
+            let getDishesData = {
+                page: 0,
+                count: 200,
+                store_id: store_id
+            };
             Dish.getDishesByStore(getDishesData)
                 .then(dishes => {
-                    maxDiscount = dishes && dishes.length > 0 ? Math.max.apply(Math, dishes.map(d => d.discount).filter(n => n && n > 0)) : 0;
-                    store.max_discount = store.discount + maxDiscount;
+                    let discounts = dishes && dishes.length > 0 ?
+                        dishes.map(d => d.discount).filter(n => n && n > 0) : [];
+                    let maxDiscount = discounts && discounts.length > 0 ?
+                        Math.max.apply(Math, discounts) : 0;
+                    store.max_discount = (store.discount || 0) + maxDiscount;
                     store.save();
                 })
         }).catch(err => {
