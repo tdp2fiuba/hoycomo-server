@@ -153,18 +153,18 @@ function getLeadTimePerDay(req, res, user) {
     Order.getOrders(data_find)
         .then(orders => {
             const leadTimePerDay = {};
-            const accTimePerDay = {};
+            const accSecondsPerDay = {};
             const evalOrdersPerDay = {};
             const usedOrderDates = [];
             orders.forEach(function (order) {
                 const orderDate = new Date(order.state.timestamp).toLocaleDateString();//common.getDayAndMonth(new Date(order.state.timestamp));
                 usedOrderDates.push(orderDate);
-                const orderLeadTime = Order.calculateDeliveryTime(order);
                 evalOrdersPerDay[orderDate] = (evalOrdersPerDay[orderDate] || 0) + 1;
-                accTimePerDay[orderDate] = ( (accTimePerDay[orderDate] || 0) + orderLeadTime );
+                const orderLeadSeconds = Order.calculateDeliveryTime(order);
+                accSecondsPerDay[orderDate] = (accSecondsPerDay[orderDate] || 0) + orderLeadSeconds;
             });
             usedOrderDates.forEach(orderDate =>
-                leadTimePerDay[orderDate] = accTimePerDay[orderDate] / evalOrdersPerDay[orderDate]
+                leadTimePerDay[orderDate] = accSecondsPerDay[orderDate] / evalOrdersPerDay[orderDate]
             );
 
             let _date = new Date(start.getFullYear(),start.getMonth(),start.getDate());
