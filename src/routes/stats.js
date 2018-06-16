@@ -13,4 +13,6 @@ exports.assignRoutes = function (app) {
 
     app.get(apiHostBase + '/stats/orders',stats.getOrders);
 
+    app.get(apiHostBase + '/stats/lead_time', stats.getLeadTime);
+
 };
