@@ -57,7 +57,8 @@ const storeSchema = new Schema({
         }
     },
     discount: {type: Number, default: 0},
-    max_discount: {type: Number, default: 0}
+    max_discount: {type: Number, default: 0},
+    disabled: {type: Boolean, default: false}
 });
 
 storeSchema.plugin(AutoIncrement, {inc_field: 'store_id'});
@@ -114,7 +115,7 @@ exports.getStores = function(data) {
 };
 
 exports.getAllStores = function(data) {
-    return Store.aggregate(dbTools.buildFindStoreQuery(data.filters))
+    return Store.find()
             .sort({register_timestamp: 'asc'});
 };
 

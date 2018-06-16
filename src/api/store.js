@@ -82,6 +82,9 @@ exports.search = function (req, res) {
 	const page = req.query.page || common.DEFAULT_PAGE;
 	const count = req.query.count || common.DEFAULT_SIZE;
 	let parameters = { page: page,count: count };
+	if (req.query.all) {
+		parameters = { all: true }
+	}
     if (req.query.filters) {
 		parameters.filters = JSON.parse(req.query.filters);
 	}
@@ -225,3 +228,19 @@ exports.deleteAll = function (req, res) {
         res.status(HttpStatus.OK).json("Comercios eliminados")
 	);
 };
+
+exports.disable = function (req, res) {
+	const id = req.params.store_id;
+	const disable = req.body.disable;
+	const reason = req.body.reason;
+	Store.disableOrEnable(id, disable).then((store) => {
+		if (disable) {
+			mailing.sendHTMLMail(store.email,"Su comercio ha sido inhabilitado", "<p><em><strong>Hoy Como </strong></em>ha decidido que su comercio, <strong>"+ store.name +",</strong> sea deshabilitado de la plataforma</p><p>La razón:</p><ul><li><i>\"" + reason + "\"</i></li></ul><p>Ante cualquier duda, contáctese con la administración a admin@hoycomo.com.ar</p>");
+		}
+		res.status(HttpStatus.OK).json("");
+	})
+	.catch((err) => {
+		logger.error("Error disabling store: " + err);
+		res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(err);
+	});
+}

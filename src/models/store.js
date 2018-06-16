@@ -51,10 +51,10 @@ function storeToFront(store) {
         delay_time: store.delay_time,
         availability: store.availability ? store.availability : mockAvailability,
         discount: store.discount,
-        max_discount: store.max_discount
+        max_discount: store.max_discount,
+        register_timestamp: store.register_timestamp,
+        disabled: store.disabled
     }
-
-
 }
 
 exports.storeToFront = storeToFront;
@@ -283,3 +283,20 @@ exports.recalculateStoreMaxDiscount = function (store_id) {
 exports.deleteAll = function () {
   return storeDB.Store.remove({}).exec();
 };
+
+exports.disableOrEnable = function (store_id, disable) {
+    return new Promise((resolve, reject) => {
+        storeDB.getStoreById(store_id).then((store) => {
+            store.disabled = disable
+            storeDB.updateStore(store_id, store).then((store) => {
+                resolve(store)
+            })
+            .catch((err) => {
+                reject(err)
+            })
+        })
+        .catch((err) => {
+            reject(err)
+        })
+    })
+}

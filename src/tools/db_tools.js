@@ -30,6 +30,7 @@ exports.DBConnectMongoose = function() {
 
 exports.buildFindStoreQuery = function (filters) {
     var query = [];
+    var match = { $match: { disabled: { $ne: true } } };
     if (filters) {
         // Para poder filtrar por distancia, se necesita una propiedad que sea un array de dos Numbers,
         // con formato [ long, lat ] de la ubicación que se quiere usar
@@ -41,8 +42,6 @@ exports.buildFindStoreQuery = function (filters) {
             };
             query.push(addFields);
         }
-        var match = { $match: {} };
-
         // Por cada filtro
         for (var filter in filters) {
             switch (filter) {
@@ -78,7 +77,7 @@ exports.buildFindStoreQuery = function (filters) {
                     break;
             }
         }
-        query.push(match);
     }
+    query.push(match);
     return query;
 }

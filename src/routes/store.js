@@ -15,7 +15,10 @@ exports.assignRoutes = function (app) {
 	app.put(apiHostBase + '/store/:store_id', store.update);
 
 	//Update discount store
-    app.put(apiHostBase + '/store/:store_id/discount', store.updateDiscount);
+	app.put(apiHostBase + '/store/:store_id/discount', store.updateDiscount);
+	
+	//Disable store
+	app.patch(apiHostBase + '/store/:store_id/disable', store.disable);
 	
 	//Delete store
 	app.delete(apiHostBase + '/store/:store_id',store.delete);
