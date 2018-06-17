@@ -156,28 +156,32 @@ function getLeadTimePerDay(req, res, user) {
             const accSecondsPerDay = {};
             const evalOrdersPerDay = {};
             const usedOrderDates = [];
-            orders.forEach(function (order) {
-                const orderDate = new Date(order.state.timestamp).toLocaleDateString();//common.getDayAndMonth(new Date(order.state.timestamp));
-                usedOrderDates.push(orderDate);
-                evalOrdersPerDay[orderDate] = (evalOrdersPerDay[orderDate] || 0) + 1;
-                const orderLeadSeconds = Order.calculateDeliveryTime(order);
-                accSecondsPerDay[orderDate] = (accSecondsPerDay[orderDate] || 0) + orderLeadSeconds;
+
+            Promise.all(orders.map(Order.calculateDeliveryTime)).then(values => {
+                orders.forEach(function (order, index) {
+                    const orderDate = new Date(order.state.timestamp).toLocaleDateString();//common.getDayAndMonth(new Date(order.state.timestamp));
+                    usedOrderDates.push(orderDate);
+                    evalOrdersPerDay[orderDate] = (evalOrdersPerDay[orderDate] || 0) + 1;
+                    const orderLeadSeconds = values[index];
+                    accSecondsPerDay[orderDate] = (accSecondsPerDay[orderDate] || 0) + orderLeadSeconds;
+                });
+
+                usedOrderDates.forEach(orderDate =>
+                    leadTimePerDay[orderDate] = accSecondsPerDay[orderDate] / evalOrdersPerDay[orderDate]
+                );
+
+                let _date = new Date(start.getFullYear(),start.getMonth(),start.getDate());
+                const _end = new Date(end.getFullYear(),end.getMonth(),end.getDate()).getTime();
+                const days = [];
+                while (_date.getTime() <= _end){
+
+                    days.push({day:_date.toLocaleDateString('es-ar'), lead_time: (leadTimePerDay[_date.toLocaleDateString()] || 0)});
+
+                    _date.setDate(_date.getDate() + 1);
+                }
+
+                res.status(HttpStatus.OK).json(days);
             });
-            usedOrderDates.forEach(orderDate =>
-                leadTimePerDay[orderDate] = accSecondsPerDay[orderDate] / evalOrdersPerDay[orderDate]
-            );
-
-            let _date = new Date(start.getFullYear(),start.getMonth(),start.getDate());
-            const _end = new Date(end.getFullYear(),end.getMonth(),end.getDate()).getTime();
-            const days = [];
-            while (_date.getTime() <= _end){
-
-                days.push({day:_date.toLocaleDateString('es-ar'), lead_time: (leadTimePerDay[_date.toLocaleDateString()] || 0)});
-
-                _date.setDate(_date.getDate() + 1);
-            }
-
-            res.status(HttpStatus.OK).json(days);
         })
         .catch(err => {
             console.log(err);
