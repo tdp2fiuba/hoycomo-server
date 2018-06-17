@@ -167,7 +167,7 @@ function getLeadTimePerDay(req, res, user) {
                 });
 
                 usedOrderDates.forEach(orderDate =>
-                    leadTimePerDay[orderDate] = accSecondsPerDay[orderDate] / evalOrdersPerDay[orderDate]
+                    leadTimePerDay[orderDate] = Math.round( (accSecondsPerDay[orderDate] / evalOrdersPerDay[orderDate]) / 60 )
                 );
 
                 let _date = new Date(start.getFullYear(),start.getMonth(),start.getDate());
