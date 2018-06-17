@@ -189,6 +189,71 @@ function getLeadTimePerDay(req, res, user) {
         });
 }
 
+exports.getLeadTimePerClient = function (req, res) {
+    const start_date = req.query.start_date;
+    const end_date = req.query.end_date;
+    const start = new Date(start_date);
+    const end = new Date(end_date);
+
+    const data_find = { "state.state": 'DELIVERED' };
+    if (start_date && end_date) {
+        if (start instanceof Date && !isNaN(start) && end instanceof Date && !isNaN(end)) {
+            data_find["register_timestamp"] = { "$gte": start, "$lt": end };
+        } else {
+            return common.handleError(res, { message: "Error en las fechas especificadas" }, HttpStatus.NOT_FOUND);
+        }
+    } else {
+        return common.handleError(res, { message: "Error en las fechas especificadas" }, HttpStatus.NOT_FOUND);
+    }
+
+    Store.getStores({ all: true}).then((stores) => {
+        let storesDictionary = stores.reduce((accumulator, currentValue) => {
+            accumulator[currentValue.store_id] = currentValue.name;
+            return accumulator;
+        }, {});
+        Order.getOrders(data_find)
+        .then(orders => {
+            const leadTimePerStore = {};
+            const accumulatedSecondsPerStore = {};
+            const evalOrdersPerStore = {};
+            const usedStores = [];
+
+            Promise.all(orders.map(Order.calculateDeliveryTime)).then(values => {
+                orders.forEach(function (order, index) {
+                    const orderStore = storesDictionary[order.store_id];
+                    if (usedStores.indexOf(orderStore) < 0) {
+                        usedStores.push(orderStore);
+                    }
+                    evalOrdersPerStore[orderStore] = (evalOrdersPerStore[orderStore] || 0) + 1;
+                    const orderLeadSeconds = values[index];
+                    accumulatedSecondsPerStore[orderStore] = (accumulatedSecondsPerStore[orderStore] || 0) + orderLeadSeconds;
+                });
+
+                usedStores.forEach(orderStore =>
+                    leadTimePerStore[orderStore] = accumulatedSecondsPerStore[orderStore] / evalOrdersPerStore[orderStore]
+                );
+
+                const leadTimes = stores.map((store) => {
+                    return {
+                        client: store.name,
+                        leadTime: (leadTimePerStore[store.name] || 0)
+                    }
+                });
+
+                res.status(HttpStatus.OK).json(leadTimes);
+            });
+        })
+        .catch(err => {
+            console.log(err);
+            return common.handleError(res, { message: "Error, intente nuevamente mas tarde" }, HttpStatus.INTERNAL_SERVER_ERROR);
+        });
+    })
+    .catch((err) => {
+        console.log(err);
+        return common.handleError(res,{ message: "Error, intente nuevamente mas tarde" }, HttpStatus.INTERNAL_SERVER_ERROR);
+    });
+}
+
 exports.getLeadTime = function (req,res) {
     beaber.authorization(req, res, getLeadTimePerDay);
 };
