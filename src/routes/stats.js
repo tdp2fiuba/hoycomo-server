@@ -15,4 +15,6 @@ exports.assignRoutes = function (app) {
 
     app.get(apiHostBase + '/stats/lead_time', stats.getLeadTime);
 
+    app.get(apiHostBase + '/stats/lead_time_per_client', stats.getLeadTimePerClient)
+
 };

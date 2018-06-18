@@ -163,6 +163,7 @@ exports.deleteById = function (id) {
 };
 
 exports.calculateDeliveryTime = function(order) {
+    const orderId = order.order_id
     const states = order.states;
     const address_order = order.address.name;
     let preparation_timestamp;
