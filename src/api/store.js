@@ -236,6 +236,8 @@ exports.disable = function (req, res) {
 	Store.disableOrEnable(id, disable).then((store) => {
 		if (disable) {
 			mailing.sendHTMLMail(store.email,"Su comercio ha sido inhabilitado", "<p><em><strong>Hoy Como </strong></em>ha decidido que su comercio, <strong>"+ store.name +",</strong> sea deshabilitado de la plataforma</p><p>La razón:</p><ul><li><i>\"" + reason + "\"</i></li></ul><p>Ante cualquier duda, contáctese con la administración a admin@hoycomo.com.ar</p>");
+		} else {
+			mailing.sendHTMLMail(store.email,"Su comercio ha sido re-habilitado", "<p><em><strong>Hoy Como </strong></em>se complace en informarle que su comercio, <strong>"+ store.name +",</strong> ha sido re-habilitado.</p><p>Ante cualquier duda, contáctese con la administración a admin@hoycomo.com.ar</p>");
 		}
 		res.status(HttpStatus.OK).json("");
 	})
